@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Queue } from './Queue';
 
 @Component({
   selector: 'app-root',
@@ -13,9 +14,8 @@ export class AppComponent {
   sutesIdo = 10; //sütés idő mp-ben
   szabadSutok = new Map<number, boolean>(); //sütők + foglalt vagy sem
   Ora; //sütők órája
-  inQueue: any; //sorban állók
-  orderNumber = 1;
-  quantity = 1;
+  inQueue = new Queue<number>(180);
+  order = 1;
   rendelesLog = "";
   elkeszultLog = "";
 
@@ -27,9 +27,47 @@ export class AppComponent {
     for (let i = 0; i < this.sutokSzama; i++) {
       this.Ora[i] = 0;
     }
-    this.inQueue = new Array(2);
-    this.inQueue[0] = 0;
-    this.inQueue[1] = 0;
+  }
+
+
+  rendeles(){
+    let id = this.order++;
+    this.inQueue.enqueue(id);
+    if(!this.inQueue.isEmpty()){
+      this.sut();
+    }
+  }
+
+  async sut(){
+    while(!this.inQueue.isEmpty()){
+      let suto = this.getSuto();
+      if(suto == -1){
+        let waitModifier = 0;
+        if(this.inQueue.getLength() >= 5){
+          waitModifier = this.inQueue.getLength() - 5;
+        }
+        let waitTime = 0;
+        for (let i = waitModifier; i < this.sutokSzama; i++) {
+          if (waitTime < this.Ora[i]) {
+            waitTime = this.Ora[i];
+          }
+        }
+        let order = this.inQueue.peek();
+        let waitTimeSum = this.sutesIdo - waitTime + this.sutesIdo * waitModifier;
+        this.rendelesLogger("Rendelés #"+order+": A " + this.sutesIdo + " perc sütési időn felül " + waitTimeSum + " percet kell még várni a pizza(k) elkészülésére!\n");
+        await this.pizzaraVar((waitTimeSum)*1000 + 1);
+        this.sut();
+      }else{
+        let order = this.inQueue.peek();
+        this.rendelesLogger("Rendelés #"+order+": A pizza(k) " + this.sutesIdo + " percen belül elkészül(nek)!\n");
+        this.inQueue.dequeue();
+        this.pizzaSutes(suto, order);
+      }
+    }
+  }
+
+  ebreszt(){
+    return new Promise(resolve => setTimeout(resolve, 0));
   }
 
   getSuto() {
@@ -46,76 +84,6 @@ export class AppComponent {
     this.szabadSutok.set(suto, true);
   }
 
-  pizzaRendeles(orderNumber : number) {
-    let suto = this.getSuto();
-    if (suto != -1) {
-      this.pizzaSutes(suto, orderNumber);
-      return 0;
-    } else {
-      let waitModifier = this.inQueue[1];
-      let waitTime = this.Ora[this.inQueue[0]];
-      for (let i = this.inQueue[0] + 1; i < this.sutokSzama; i++) {
-        if (waitTime < this.Ora[i]) {
-          waitTime = this.Ora[i];
-        }
-      }
-      return this.sutesIdo - waitTime + this.sutesIdo * waitModifier;
-    }
-  }
-
-  rendeles(n: Number) {
-    let waitTimeSum = 0;
-    for (let i = 0; i < n; i++) {
-      /*waitTimeSum = waitTimeSum + this.pizzaRendeles();*/
-      let temp = this.pizzaRendeles(this.orderNumber);
-      if (temp > 0) {
-        this.queue(temp, this.orderNumber);
-        this.queueIncrement();
-        waitTimeSum = waitTimeSum + temp;
-      }
-    }
-    if (waitTimeSum == 0) {
-      this.rendelesLogger("Rendelés #"+this.orderNumber+": A pizza(k) " + this.sutesIdo + " percen belül elkészül(nek)!\n");
-      this.orderNumber++;
-    }
-    else {
-      this.rendelesLogger("Rendelés #"+this.orderNumber+": A " + this.sutesIdo + " perc sütési időn felül " + waitTimeSum + " percet kell még várni a pizza(k) elkészülésére!\n");
-      this.orderNumber++;
-    }
-  }
-
-  rendelesLogger(str: string) {
-    this.rendelesLog += str;
-  }
-
-  elkeszultLogger(str: string) {
-    this.elkeszultLog += str;
-  }
-
-  queueIncrement() {
-    if (this.inQueue[0] == this.sutokSzama-1) {
-      this.inQueue[0] = 0;
-      this.inQueue[1]++;
-    } else {
-      this.inQueue[0]++;
-    }
-  }
-  queueDecrement() {
-    if (this.inQueue[1] > 0 && this.inQueue[0] == 0) {
-      this.inQueue[1]--;
-      this.inQueue[0] = this.sutokSzama-1;
-    } else {
-      this.inQueue[0]--;
-    }
-  }
-
-
-  async queue(wait: number, orderNumber : number) {
-    await this.pizzaraVar(wait * 1000 + 1);
-    this.pizzaRendeles(orderNumber);
-    this.queueDecrement();
-  }
-
   async pizzaSutes(suto: number, orderNumber: number) {
     for (this.Ora[suto - 1]; this.Ora[suto - 1] < this.sutesIdo; this.Ora[suto - 1]++) {
       await this.pizzaraVar(1000);
@@ -126,7 +94,17 @@ export class AppComponent {
     return new Promise(resolve => setTimeout(resolve, 0));
   }
 
+  rendelesLogger(str: string) {
+    this.rendelesLog += str;
+  }
+
+  elkeszultLogger(str: string) {
+    this.elkeszultLog += str;
+  }
+
   pizzaraVar(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
+
+
 }

@@ -1,9 +1,10 @@
 <h1>Üdvözöllek a Pizzériában!</h1>
 
+
 <p>Szabad sütők: 1={{szabadSutok.get(1)}}, 2={{szabadSutok.get(2)}}, 3={{szabadSutok.get(3)}}, 4={{szabadSutok.get(4)}}, 5={{szabadSutok.get(5)}}</p>
 <p>Szabad sütés idő: 1={{Ora[0]}}, 2={{Ora[1]}}, 3={{Ora[2]}}, 4={{Ora[3]}}, 5={{Ora[4]}}</p>
-<p>Sorban áll: {{inQueue[0]}}, dimenzió: {{inQueue[1]}}</p>
-<button (click)="rendeles(1)">Pizza rendelés</button>
+<p>Sorban áll: {{inQueue.getLength()}}</p>
+<button (click)="rendeles()">Pizza rendelés</button>
 <div class="container">
     <div class="row">
         <div class="md-6">
@@ -14,4 +15,3 @@
         </div>
     </div>
 </div>
-
