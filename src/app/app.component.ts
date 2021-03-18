@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
 import { Queue } from './Queue';
+import { Order } from './Order';
+import { Suto } from './Suto';
 
 @Component({
   selector: 'app-root',
@@ -9,27 +11,29 @@ import { Queue } from './Queue';
 export class AppComponent {
   title = 'AngularBeadando';
 
-
-  sutokSzama = 5; //sütők száma
-  sutesIdo = 10; //sütés idő mp-ben
-  szabadSutok = new Map<number, boolean>(); //sütők + foglalt vagy sem
-  Ora; //sütők órája
-  inQueue = new Queue<number>(180);
-  order = 1;
+  varakozoSor = new Queue<Order>(180); //180 a maximum várakozó pizza, mert 12 órát van nyitva a pizzéria egy nap, 5 sütő van és egy pizza 20 percig sül: 12*60/20*5=180
+  konyha = new Suto(5, 1);
   rendelesLog = "";
   elkeszultLog = "";
 
   constructor() {
-    for (let i = 0; i < this.sutokSzama; i++) {
-      this.szabadSutok.set(i + 1, true);
+
+  }
+
+  rendeles(pizzaDB : number){
+    let rendeles = new Order(pizzaDB);
+    if(this.varakozoSor.isEmpty()){
+      this.varakozoSor.enqueue(rendeles);
+      this.konyha.Sut(this.varakozoSor);
+    }else{
+      this.varakozoSor.enqueue(rendeles);
     }
-    this.Ora = new Array(this.sutokSzama);
-    for (let i = 0; i < this.sutokSzama; i++) {
-      this.Ora[i] = 0;
-    }
+
   }
 
 
+
+/*
   rendeles(){
     let id = this.order++;
     this.inQueue.enqueue(id);
@@ -106,5 +110,5 @@ export class AppComponent {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-
+*/
 }
