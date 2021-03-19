@@ -1,10 +1,10 @@
 export class Queue<T> {
     private queue: T[];
-    private length: number; // number of elements currently in the queue
-    private readonly maxSize: number; // maximum number of elements queue can contain
+    private length: number; // a sorban lévő elemek száma
+    private readonly maxSize: number; // sorban állók maximum száma
 
     public constructor(maxSize: number) {
-        // Make sure maxSize is at least 1
+        // a sor nagyobb legyen mint 0:
         this.maxSize = maxSize > 0 ? maxSize : 10;
         this.length = 0;
         this.queue = new Array<T>(this.maxSize);
@@ -17,45 +17,45 @@ export class Queue<T> {
     public isFull(): boolean {
         return this.length === this.maxSize;
     }
-    
+
     public enqueue(newItem: T): void {
         if (this.isFull()) {
-            throw new Error('Queue overflow');
+            throw new Error('Sor túlcsordulás!');
         } else {
-            this.queue[this.length++] = newItem; // post-increment adds 1 to length after insertion
+            this.queue[this.length++] = newItem; // miután beraktuk az új elemet, növelünk a sor hosszán
         }
     }
 
     public dequeue(): T {
         if (this.isEmpty()) {
-            throw new Error('Queue underflow');
+            throw new Error('A sor üres!');
         }
-        
+
         const retval = this.queue[0];
 
         for (let i = 0; i < this.length; i++) {
-            this.queue[i] = this.queue[i + 1];
+            this.queue[i] = this.queue[i + 1];  //elemek előrébb mozgatása
         }
 
-        this.length--; // we need to decrease length by 1
+        this.length--; // hossz csökkentése
         return retval;
     }
 
     public peek(): T {
         if (this.isEmpty()) {
-            throw new Error('Queue is empty');
+            throw new Error('A sor üres!');
         }
         return this.queue[0];
     }
-    
-    public getLength(){
+
+    public getLength() {
         return this.length;
     }
 
     public queueContents(): void {
-        console.log('Queue Contents');
+        console.log('A sor elemei:');
         for (let i = 0; i < this.length; ++i) {
-            console.log(`queue[${i}]: ${this.queue[i]}`);
+            console.log(`sor[${i}]: ${this.queue[i]}`);
         }
     }
 }

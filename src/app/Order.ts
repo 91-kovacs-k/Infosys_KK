@@ -4,29 +4,29 @@ export class Order {
     private Quantity: number; // rendelt mennyiség
     private remainingQuantity: number; // hátralévő mennyiség
 
-    public constructor(db : number) {
+    public constructor(db: number) {
         this.ID = Order.setID();
         this.Quantity = db;
-        this.remainingQuantity = this.Quantity;
+        this.remainingQuantity = db;
     }
 
-    public getID(){
+    public getID() {
         return this.ID;
     }
 
-    public getQuantity(){
+    public getQuantity() {
         return this.Quantity;
     }
 
-    public getRemainingQuantity(){
+    public getRemainingQuantity() {
         return this.remainingQuantity;
     }
 
-    public DecrementRemainingQuantity(){
+    public DecrementRemainingQuantity() {
         this.remainingQuantity = this.remainingQuantity - 1;
     }
 
-    public static setID(){
+    public static setID() {
         return Order.seged++;
     }
 
