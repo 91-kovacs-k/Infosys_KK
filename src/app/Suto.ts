@@ -1,4 +1,3 @@
-import { Observable } from "rxjs";
 import { Order } from "./Order";
 import { Queue } from "./Queue";
 
@@ -7,7 +6,7 @@ export class Suto {
     private static sutesIdo: number; // sütés idő mp-ben
     private static sutoOra: any; // sütők órája
     private static szabadSutok = new Map<number, boolean>(); //sütők + foglalt vagy sem
-    static elkeszultLog = ""; // elkészült pizzák
+    private static elkeszultLog = ""; // elkészült pizzák
 
     public constructor(db: number, mperc: number) {
         Suto.sutokSzama = db;
@@ -20,7 +19,6 @@ export class Suto {
             Suto.szabadSutok.set(i + 1, true);
         }
     }
-
 
     public static async Sut(sor: Queue<Order>) {
         while (!sor.isEmpty()) {
