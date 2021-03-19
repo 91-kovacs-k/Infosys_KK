@@ -14,7 +14,7 @@ export class SutoComponent {
   private static sutesIdo: number; // sütés idő mp-ben
   private static sutoOra: any; // sütők órája
   private static szabadSutok = new Map<number, boolean>(); //sütők + foglalt vagy sem
-  private static elkeszultLog : string; // elkészült pizzák
+  private static elkeszultLog = ""; // elkészült pizzák
 
   SutoComponent = SutoComponent;
 
@@ -28,7 +28,6 @@ export class SutoComponent {
     for (let i = 0; i < SutoComponent.sutokSzama; i++) {
       SutoComponent.szabadSutok.set(i + 1, true);
     }
-    SutoComponent.elkeszultLog = "";
   }
 
   public static async Sut(sor: Queue<Order>) {
@@ -49,7 +48,8 @@ export class SutoComponent {
     await SutoComponent.pizzaraVar(SutoComponent.sutesIdo);
     SutoComponent.sutoOra[suto] = 0;
     SutoComponent.releaseSuto(suto + 1);
-    SutoComponent.elkeszultLogger("Elkészült a #" + sor.peek().getID() + " rendelés " + (sor.peek().getQuantity() - sor.peek().getRemainingQuantity() + 1) + "/" + sor.peek().getQuantity() + " pizzája.");
+    let str = "Elkészült a #" + sor.peek().getID() + " rendelés " + (sor.peek().getQuantity() - sor.peek().getRemainingQuantity() + 1) + "/" + sor.peek().getQuantity() + " pizzája.";
+    SutoComponent.elkeszultLogger(str);
     if (sor.peek().getRemainingQuantity() == 1) {
       sor.dequeue();
     } else {

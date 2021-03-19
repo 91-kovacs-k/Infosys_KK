@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { Queue } from './Queue';
 import { Order } from './Order';
-//import { Suto } from './Suto';
 import { SutoComponent } from './suto/suto.component';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
