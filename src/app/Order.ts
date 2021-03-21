@@ -26,7 +26,7 @@ export class Order {
         this.remainingQuantity = this.remainingQuantity - 1;
     }
 
-    public static setID() {
+    private static setID() {
         return Order.seged++;
     }
 

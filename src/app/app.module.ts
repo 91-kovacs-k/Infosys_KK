@@ -1,18 +1,21 @@
 import { NgModule } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { SutoComponent } from './suto/suto.component';
+import { SutoManagementComponent } from './suto-management/suto-management.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    SutoComponent,
+    SutoManagementComponent,
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    FormsModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]
