@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Order } from "../Order";
 import { Queue } from "../Queue";
 import { Inject } from '@angular/core';
@@ -16,11 +16,9 @@ export class SutoComponent {
   private static szabadSutok = new Map<number, boolean>(); //sütők + foglalt vagy sem
   private static elkeszultLog = ""; // elkészült pizzák
 
-  SutoComponent = SutoComponent;
-
   public constructor(@Inject(Number) db: number, @Inject(Number) mperc: number) {
-    SutoComponent.sutokSzama = db;
-    SutoComponent.sutesIdo = mperc;
+    SutoComponent.sutokSzama = 5;
+    SutoComponent.sutesIdo = 20;
     SutoComponent.sutoOra = new Array(SutoComponent.sutokSzama);
     for (let i = 0; i < SutoComponent.sutokSzama; i++) {
       SutoComponent.sutoOra[i] = 0;
@@ -29,6 +27,7 @@ export class SutoComponent {
       SutoComponent.szabadSutok.set(i + 1, true);
     }
   }
+  
 
   public static async Sut(sor: Queue<Order>) {
     while (!sor.isEmpty()) {
@@ -49,7 +48,8 @@ export class SutoComponent {
     SutoComponent.sutoOra[suto] = 0;
     SutoComponent.releaseSuto(suto + 1);
     let str = "Elkészült a #" + sor.peek().getID() + " rendelés " + (sor.peek().getQuantity() - sor.peek().getRemainingQuantity() + 1) + "/" + sor.peek().getQuantity() + " pizzája.";
-    SutoComponent.elkeszultLogger(str);
+    SutoComponent.elkeszultLogger("Elkészült a #" + sor.peek().getID() + " rendelés " + (sor.peek().getQuantity() - sor.peek().getRemainingQuantity() + 1) + "/" + sor.peek().getQuantity() + " pizzája.");
+    alert(str);
     if (sor.peek().getRemainingQuantity() == 1) {
       sor.dequeue();
     } else {
@@ -84,5 +84,4 @@ export class SutoComponent {
   public getElkeszultLog() {
     return SutoComponent.elkeszultLog;
   }
-
 }

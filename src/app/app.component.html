@@ -1,12 +1,25 @@
-<h1>Üdvözöllek a Pizzériában!</h1>
 
 
-<button (click)="rendeles(1)" (click)="rendeles(3)" (click)="rendeles(2)" (click)="rendeles(1)"
-    (click)="rendeles(5)">Pizza rendelés</button>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1 class="text-center mt-5">Üdvözöllek a Pizzériában!</h1>
+            
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <button class="btn btn-primary" (click)="rendeles(1)" (click)="rendeles(3)" (click)="rendeles(2)" (click)="rendeles(1)"
+                (click)="rendeles(5)">Pizza rendelés</button>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <p style="white-space: pre;">{{getRendelesLog()}}</p>
+        </div>
+        <div class="col-md-6">
 
-<p style="white-space: pre;">{{getRendelesLog()}}</p>
+        </div>
+    </div>
+</div>
 
-<br />
-<!--
-<app-suto></app-suto>
--->

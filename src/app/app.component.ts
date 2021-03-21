@@ -12,7 +12,7 @@ export class AppComponent {
   title = 'AngularBeadando';
 
   private varakozoSor = new Queue<Order>(180); //180 a maximum várakozó pizza, mert 12 órát van nyitva a pizzéria egy nap, 5 sütő van és egy pizza 20 percig sül: 12*60/20*5=180
-  private konyha = new SutoComponent(5, 6);
+  private konyha = new SutoComponent(2, 6);
   private rendelesLog: string = "";
 
   constructor() {
@@ -37,4 +37,5 @@ export class AppComponent {
   public getRendelesLog() {
     return this.rendelesLog;
   }
+
 }
