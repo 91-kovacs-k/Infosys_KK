@@ -33,12 +33,12 @@ export class SutoManagementComponent implements OnInit {
   }
 
   public sutoInicializalas(db: number, mperc: number) {
-    if (!(mperc > 0 && mperc < 40)) {
+    if (!(mperc > 0 && mperc < 41)) {
       this.wrongIdo = true;
     } else {
       this.wrongIdo = false;
     }
-    if (!(db > 0 && db < 10)) {
+    if (!(db > 0 && db < 11)) {
       this.wrongDb = true;
     } else {
       this.wrongDb = false;
@@ -131,6 +131,47 @@ export class SutoManagementComponent implements OnInit {
 
   public static getElkeszultLog() {
     return this.elkeszultLog;
+  }
+
+
+  public mikorKerulSorra(order : Order, sor : Queue<Order>){
+    let kezdosorszam = 0;
+    let wait = [];
+    for(let i = 0; i < sor.getLength(); i++){
+      if(sor.getobjectbynumber(i).getID == order.getID){
+        kezdosorszam += 1;
+        break;
+      }else{
+        kezdosorszam += sor.getobjectbynumber(i).getQuantity();
+      }
+    }
+    if(kezdosorszam == 0){
+      wait[0] = this.sutesIdo;
+      return wait;
+    }else{
+      for(let i = 0; i < order.getQuantity(); i++){
+        wait[i] = this.mikor(kezdosorszam + i);
+      }
+    }
+    return wait;
+  }
+
+  public mikor(sorszam : number){
+    let ora = 0;
+    let waitTime = 0;
+    for(let i = 0; i < this.sutok.length; i++){
+      if(ora < this.sutok[i].getSutoOra()){
+        ora = this.sutok[i].getSutoOra();
+      }
+    }
+    waitTime = this.sutesIdo - ora;
+    
+    if(sorszam > this.sutok.length){
+      let osztando = sorszam - this.sutok.length;
+      let szorzo = Math.ceil((osztando / this.sutok.length));
+      waitTime += szorzo  * this.sutesIdo;
+    }
+    return waitTime;
   }
 
 }

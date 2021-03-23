@@ -41,6 +41,14 @@ export class Queue<T> {
         return retval;
     }
 
+    public getobjectbynumber(n : number): T {
+        if (this.isEmpty()) {
+            throw new Error('A sor üres!');
+        }
+
+        return this.queue[n];
+    }
+
     public peek(): T {
         if (this.isEmpty()) {
             throw new Error('A sor üres!');

@@ -13,6 +13,7 @@ export class AppComponent {
 
   private varakozoSor = new Queue<Order>(180); //180 a maximum várakozó pizza, mert 12 órát van nyitva a pizzéria egy nap, 5 sütő van és egy pizza 20 percig sül: 12*60/20*5=180
   private rendelesLog: string = "";
+  private varakozasLog: string = "";
   konyha = new SutoManagementComponent();
   wrongPizzaDb = false;
 
@@ -35,6 +36,9 @@ export class AppComponent {
       } else {
         this.varakozoSor.enqueue(rendeles);
       }
+      let varakozas;
+      varakozas = this.konyha.mikorKerulSorra(rendeles, this.varakozoSor);
+      this.varakozasLogger(rendeles, varakozas);
     }
   }
 
@@ -46,4 +50,17 @@ export class AppComponent {
     return this.rendelesLog;
   }
 
+  private varakozasLogger(rendeles: Order, varakozas : number[]){
+    let varas = -1;
+    for(let i = 0; i < varakozas.length; i++){
+      if(varas < varakozas[i]){
+        varas = varakozas[i];
+      }
+    }
+    this.varakozasLog = this.varakozasLog + "A #" + rendeles.getID() + " számú rendelésre " + varas + " percet kell várni!\n";
+  }
+
+  public getVarakozasLog(){
+    return this.varakozasLog;
+  }
 }
