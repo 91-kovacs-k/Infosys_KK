@@ -52,12 +52,13 @@
             </div>
         </div>
         <div class="col-md-2">
-            <!-- Tesztelés miatt egyidejűleg több rendelés -->                        <!--
+            <!-- Tesztelés miatt egyidejűleg több rendelés -->         <!--           
             <button class="btn btn-primary" (click)="rendeles(1)" (click)="rendeles(3)" (click)="rendeles(2)" (click)="rendeles(1)"
                 (click)="rendeles(5)">Pizza rendelés</button>
-                 -->    
+                         --> 
             <button class="btn btn-primary float-right" *ngIf="pizzadb.validity" (click)="rendeles(pizzadb.valueAsNumber)">Pizza rendelés</button>
-
+                  
+            <button class="btn btn-danger float right"(click)="stop()">Stop</button>
         </div>
     </div>
     <div class="row mt-5">

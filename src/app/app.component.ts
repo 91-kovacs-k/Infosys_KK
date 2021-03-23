@@ -22,22 +22,25 @@ export class AppComponent {
   }
 
   public rendeles(pizzaDB: number) {
-    if(!(pizzaDB > 0 && pizzaDB < 10)){
+    if(!(pizzaDB > 0 && pizzaDB < 11)){
       this.wrongPizzaDb = true;
     }else{
       this.wrongPizzaDb = false;
     }
     if(!this.wrongPizzaDb){
       let rendeles = new Order(pizzaDB);
+      let varakozas;
       this.rendelesLogger(rendeles);
       if (this.varakozoSor.isEmpty()) {
         this.varakozoSor.enqueue(rendeles);
+        
+        varakozas = this.konyha.mikorKerulSorra(rendeles, this.varakozoSor);
         this.konyha.Sut(this.varakozoSor);
       } else {
         this.varakozoSor.enqueue(rendeles);
+        varakozas = this.konyha.mikorKerulSorra(rendeles, this.varakozoSor);
       }
-      let varakozas;
-      varakozas = this.konyha.mikorKerulSorra(rendeles, this.varakozoSor);
+      
       this.varakozasLogger(rendeles, varakozas);
     }
   }
@@ -50,17 +53,14 @@ export class AppComponent {
     return this.rendelesLog;
   }
 
-  private varakozasLogger(rendeles: Order, varakozas : number[]){
-    let varas = -1;
-    for(let i = 0; i < varakozas.length; i++){
-      if(varas < varakozas[i]){
-        varas = varakozas[i];
-      }
-    }
-    this.varakozasLog = this.varakozasLog + "A #" + rendeles.getID() + " számú rendelésre " + varas + " percet kell várni!\n";
+  private varakozasLogger(rendeles: Order, varakozas : number){
+    this.varakozasLog = this.varakozasLog + "A #" + rendeles.getID() + " számú rendelésre " + varakozas + " percet kell várni!\n";
   }
 
   public getVarakozasLog(){
     return this.varakozasLog;
+  }
+  stop(){
+    alert("stop")
   }
 }

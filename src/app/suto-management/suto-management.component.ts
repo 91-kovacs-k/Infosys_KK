@@ -135,43 +135,49 @@ export class SutoManagementComponent implements OnInit {
 
 
   public mikorKerulSorra(order : Order, sor : Queue<Order>){
-    let kezdosorszam = 0;
-    let wait = [];
+    let sorszamUtolso = 0;
+    let retval = 0;
     for(let i = 0; i < sor.getLength(); i++){
-      if(sor.getobjectbynumber(i).getID == order.getID){
-        kezdosorszam += 1;
-        break;
+      if(sor.getobjectbynumber(i).getID() == order.getID()){
+        sorszamUtolso++;
       }else{
-        kezdosorszam += sor.getobjectbynumber(i).getQuantity();
+        sorszamUtolso += sor.getobjectbynumber(i).getRemainingQuantity();
       }
     }
-    if(kezdosorszam == 0){
-      wait[0] = this.sutesIdo;
-      return wait;
-    }else{
-      for(let i = 0; i < order.getQuantity(); i++){
-        wait[i] = this.mikor(kezdosorszam + i);
-      }
-    }
-    return wait;
-  }
-
-  public mikor(sorszam : number){
-    let ora = 0;
-    let waitTime = 0;
+    let vanszabad = false;
     for(let i = 0; i < this.sutok.length; i++){
-      if(ora < this.sutok[i].getSutoOra()){
-        ora = this.sutok[i].getSutoOra();
+      if(this.sutok[i].getElerheto() == true){
+        vanszabad = true;
+        break;
       }
     }
-    waitTime = this.sutesIdo - ora;
-    
-    if(sorszam > this.sutok.length){
-      let osztando = sorszam - this.sutok.length;
-      let szorzo = Math.ceil((osztando / this.sutok.length));
-      waitTime += szorzo  * this.sutesIdo;
+    if(sorszamUtolso == 1 && vanszabad){
+      sorszamUtolso += (order.getQuantity() - 1)
+      if(sorszamUtolso <= this.sutok.length){
+        sorszamUtolso = 0;
+      }else{
+        sorszamUtolso -= this.sutok.length
+      }
+    }else{
+      sorszamUtolso += (order.getQuantity() - 1)
     }
-    return waitTime;
+    
+    let szorzo = Math.ceil(sorszamUtolso / this.sutok.length);
+    retval = szorzo * this.sutesIdo;
+    
+    let seged = 0;
+    for(let i = 0; i < this.sutok.length; i++){
+      if(this.sutok[i].getElerheto() == true){
+        seged = 0;
+        break;
+      }
+      if(seged < this.sutok[i].getSutoOra()){
+        seged = this.sutok[i].getSutoOra();
+      }
+    }
+    retval += (this.sutesIdo - seged);
+
+    return retval;
   }
 
 }
