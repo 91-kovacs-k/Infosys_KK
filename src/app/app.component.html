@@ -9,15 +9,19 @@
             <div class="contaner mt-5">
                 <div class="row justify-content-center text-center">
                     <div class="form-group" *ngIf="konyha.inicializalva == false">
-                        <input #db type="number" id="db" ngModel name="db" class="form-control" placeholder="Add meg a sütők számát" >
-                        <label class="text-danger" *ngIf="konyha.wrongDb == true">1 és 10 közötti számot adj meg!</label>
-                        <input #ido type="number" id="ido" ngModel name="ido" class="form-control mt-2" placeholder="Add meg a sütés idejét!">
-                        <label class="text-danger" *ngIf="konyha.wrongIdo == true">1 és 40 közötti számot adj meg!</label><br>
+                        <input #db type="number" id="db" ngModel name="db" class="form-control"
+                            placeholder="Add meg a sütők számát">
+                        <label class="text-danger" *ngIf="konyha.wrongDb == true">1 és 10 közötti számot adj
+                            meg!</label>
+                        <input #ido type="number" id="ido" ngModel name="ido" class="form-control mt-2"
+                            placeholder="Add meg a sütés idejét!">
+                        <label class="text-danger" *ngIf="konyha.wrongIdo == true">1 és 40 közötti számot adj
+                            meg!</label><br>
                         <button class="btn btn-primary"
                             (click)="konyha.sutoInicializalas(db.valueAsNumber, ido.valueAsNumber)">Nyitás</button>
                     </div>
                 </div>
-                <div class="row justify-content-center"  *ngIf="konyha.inicializalva == true">
+                <div class="row justify-content-center" *ngIf="konyha.inicializalva == true">
                     <div class="col-md-6 text-center">
                         <strong>Sütők</strong>
                         <table class="table table-striped table-bordered mt-2">
@@ -29,10 +33,10 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr  *ngFor="let suto of konyha.sutok">
+                                <tr *ngFor="let suto of konyha.sutok">
                                     <td>{{suto.getID()}}</td>
                                     <td>{{suto.getElerheto()}}</td>
-                                    <td>{{suto.getSutoOra()}}</td>
+                                    <td>{{suto.getSutoOra().getPercString()}}:{{suto.getSutoOra().getMPercString()}}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -43,32 +47,36 @@
     </div>
     <div class="row" *ngIf="konyha.inicializalva">
         <div class="col-md-3">
-            
+
         </div>
         <div class="col-md-3">
             <div class="form-group">
-                <input #pizzadb type="number" id="pizzadb" ngModel name="pizzadb" class="form-control" placeholder="darab pizza">
+                <input #pizzadb type="number" id="pizzadb" ngModel name="pizzadb" class="form-control"
+                    placeholder="darab pizza">
                 <label class="text-danger" *ngIf="wrongPizzaDb == true">1 és 10 közötti számot adj meg!</label><br>
             </div>
         </div>
         <div class="col-md-2">
-            <!-- Tesztelés miatt egyidejűleg több rendelés -->         <!--           
+            <!-- Tesztelés miatt egyidejűleg több rendelés -->
+            <!--           
             <button class="btn btn-primary" (click)="rendeles(1)" (click)="rendeles(3)" (click)="rendeles(2)" (click)="rendeles(1)"
                 (click)="rendeles(5)">Pizza rendelés</button>
-                         --> 
-            <button class="btn btn-primary float-right" *ngIf="pizzadb.validity" (click)="rendeles(pizzadb.valueAsNumber)">Pizza rendelés</button>
-                  
-            <button class="btn btn-danger float right"(click)="stop()">Stop</button>
+                         -->
+            <button class="btn btn-primary float-right" (click)="rendeles(pizzadb.valueAsNumber)">Pizza
+                rendelés</button>
+
         </div>
     </div>
     <div class="row mt-5">
-        <div class="col-md-4 text-primary">
+        <div class="col-md-3 text-primary">
             <p style="white-space: pre;">{{getRendelesLog()}}</p>
-        </div> 
-        <div class="col-md-4 text-warning">
+        </div>
+        <div class="col-md-2"></div>
+        <div class="col-md-3 text-warning">
             <p style="white-space: pre;">{{getVarakozasLog()}}</p>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-1"></div>
+        <div class="col-md-3">
             <app-suto-management></app-suto-management>
         </div>
     </div>

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Order } from "../Order";
-import { Queue } from "../Queue";
-import { Suto } from '../Suto';
+import { Rendeles } from "../models/Rendeles";
+import { Queue } from "../models/Queue";
+import { Suto } from '../models/Suto';
 
 @Component({
   selector: 'app-suto-management',
@@ -32,8 +32,8 @@ export class SutoManagementComponent implements OnInit {
     alert(this.sutok.length);
   }
 
-  public sutoInicializalas(db: number, mperc: number) {
-    if (!(mperc > 0 && mperc < 41)) {
+  public sutoInicializalas(db: number, perc: number) {
+    if (!(perc > 0 && perc < 41)) {
       this.wrongIdo = true;
     } else {
       this.wrongIdo = false;
@@ -47,7 +47,7 @@ export class SutoManagementComponent implements OnInit {
       if (this.inicializalva) {
         alert("Már inicializálva van!")
       } else {
-        this.sutesIdo = mperc /* * 60 */;   // perc vagy mp-ben számolom a sütés időt
+        this.sutesIdo = perc;   // percben számolom a sütés időt
         this.sutok = new Array(db);
         for (let i = 0; i < db; i++) {
           this.sutok[i] = new Suto();
@@ -59,7 +59,7 @@ export class SutoManagementComponent implements OnInit {
 
   }
 
-  public async Sut(sor: Queue<Order>) {
+  public async Sut(sor: Queue<Rendeles>) {
     if (this.inicializalva) {
       this.sutesInProgress = true;
       while (!sor.isEmpty()) {
@@ -97,11 +97,16 @@ export class SutoManagementComponent implements OnInit {
   private async pizzaSutes(suto: Suto, ID: number, remaining: number, quantity: number) {
     suto.setElerheto(false);
     for (let i = 0; i < this.sutesIdo; i++) {
-      await this.pizzaraVar(1);
-      suto.setSutoOra(i + 1);
+      for (let j = 0; j < 60; j++){
+        await this.pizzaraVar(1);
+        suto.getSutoOra().setMPerc(j + 1);
+      }
+      suto.getSutoOra().setMPerc(0);
+      suto.getSutoOra().setPerc(i+1);
     }
-    suto.setSutoOra(0);
+    suto.getSutoOra().Reset();
     suto.setElerheto(true);
+
     if (remaining == 1) {
       SutoManagementComponent.elkeszultLogger("Elkészült a #" + ID + " rendelés " + quantity + "/" + quantity + " pizzája.\n");
     } else {
@@ -117,11 +122,11 @@ export class SutoManagementComponent implements OnInit {
   private async sutoreVar() {
     let waitTime = 0;
     for (let i = 0; i < this.sutok.length; i++) {
-      if (waitTime < this.sutok[i].getSutoOra()) {
-        waitTime = this.sutok[i].getSutoOra();
+      if (this.sutok[i].OraCompare(waitTime)) {
+        waitTime = this.sutok[i].getOraMP();
       }
     }
-    await this.pizzaraVar(this.sutesIdo - waitTime);
+    await this.pizzaraVar((this.sutesIdo * 60) - waitTime);
     return new Promise(resolve => setTimeout(resolve, 0));
   }
 
@@ -133,51 +138,48 @@ export class SutoManagementComponent implements OnInit {
     return this.elkeszultLog;
   }
 
-
-  public mikorKerulSorra(order : Order, sor : Queue<Order>){
-    let sorszamUtolso = 0;
-    let retval = 0;
-    for(let i = 0; i < sor.getLength(); i++){
-      if(sor.getobjectbynumber(i).getID() == order.getID()){
-        sorszamUtolso++;
-      }else{
-        sorszamUtolso += sor.getobjectbynumber(i).getRemainingQuantity();
-      }
-    }
-    let vanszabad = false;
-    for(let i = 0; i < this.sutok.length; i++){
-      if(this.sutok[i].getElerheto() == true){
-        vanszabad = true;
-        break;
-      }
-    }
-    if(sorszamUtolso == 1 && vanszabad){
-      sorszamUtolso += (order.getQuantity() - 1)
-      if(sorszamUtolso <= this.sutok.length){
-        sorszamUtolso = 0;
-      }else{
-        sorszamUtolso -= this.sutok.length
-      }
-    }else{
-      sorszamUtolso += (order.getQuantity() - 1)
-    }
-    
-    let szorzo = Math.ceil(sorszamUtolso / this.sutok.length);
-    retval = szorzo * this.sutesIdo;
-    
-    let seged = 0;
-    for(let i = 0; i < this.sutok.length; i++){
-      if(this.sutok[i].getElerheto() == true){
-        seged = 0;
-        break;
-      }
-      if(seged < this.sutok[i].getSutoOra()){
-        seged = this.sutok[i].getSutoOra();
-      }
-    }
-    retval += (this.sutesIdo - seged);
-
-    return retval;
+public mikorKerulSorra(order : Rendeles, sor : Queue<Rendeles>){
+  let orak = new Array(this.sutok.length);
+  for(let i = 0; i < this.sutok.length; i++){
+    orak[i] = ((this.sutesIdo * 60) - this.sutok[i].getOraMP());
   }
+  orak.sort((a, b) => a - b);
+  let kezdoSorszam = 0;
+  let retval = 0;
+  for(let i = 0; i < sor.getLength(); i++){
+    if(sor.getObjectByNumber(i).getID() == order.getID()){
+      kezdoSorszam++;
+    }else{
+      kezdoSorszam += sor.getObjectByNumber(i).getRemainingQuantity();
+    }
+  }
+  let utolsoSorszam = kezdoSorszam + order.getQuantity() -1 ;
+  let seged = utolsoSorszam;
+  let kivalasztott = -1;
+  while(seged != 0){
+    if(kivalasztott == (orak.length - 1)){
+      kivalasztott = 0;
+    }else{
+      kivalasztott++;
+    }
+    seged--;
+  }
+  
+  let szorzo = Math.ceil(utolsoSorszam / this.sutok.length);
+  retval = szorzo * (this.sutesIdo * 60);
 
+  if(!this.vanSzabadSuto()){
+  retval += orak[kivalasztott];
+  }
+  return retval;
+}
+
+public vanSzabadSuto(){
+  for(let i = 0; i < this.sutok.length; i++){
+    if(this.sutok[i].getElerheto()){
+      return true;
+    }
+  }
+  return false;
+}
 }
