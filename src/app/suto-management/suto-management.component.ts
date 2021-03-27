@@ -154,32 +154,54 @@ public mikorKerulSorra(order : Rendeles, sor : Queue<Rendeles>){
     }
   }
   let utolsoSorszam = kezdoSorszam + order.getQuantity() -1 ;
-  let seged = utolsoSorszam;
-  let kivalasztott = -1;
-  while(seged != 0){
-    if(kivalasztott == (orak.length - 1)){
-      kivalasztott = 0;
-    }else{
-      kivalasztott++;
-    }
-    seged--;
+  let seged;
+  let sorszam;
+  if(utolsoSorszam >= this.sutok.length){
+    seged = Math.floor(utolsoSorszam / this.sutok.length);
+    sorszam = utolsoSorszam - (seged * this.sutok.length);
+  }else{
+    sorszam = utolsoSorszam
   }
+  let kivalasztott = -1;
+  
+  if(sorszam == 0){
+    kivalasztott = 0;
+  }else{
+    while(sorszam != 0){
+      if(kivalasztott == (orak.length - 1)){
+        kivalasztott = 0;
+      }else{
+        kivalasztott++;
+      }
+      sorszam--;
+    }
+  }
+  
+
   
   let szorzo = Math.ceil(utolsoSorszam / this.sutok.length);
   retval = szorzo * (this.sutesIdo * 60);
 
-  if(!this.vanSzabadSuto()){
-  retval += orak[kivalasztott];
+  if(this.vanSzabadSuto(utolsoSorszam)){
+    return retval;
+  }else{
+    //retval += this.sutesIdo * 60;
+    retval += orak[kivalasztott];
   }
   return retval;
 }
 
-public vanSzabadSuto(){
+public vanSzabadSuto(n : number){
+  let count = 0;
   for(let i = 0; i < this.sutok.length; i++){
     if(this.sutok[i].getElerheto()){
-      return true;
+      count++;
     }
   }
-  return false;
+  if(count >= n){
+    return true;
+  }else{
+    return false;
+  }
 }
 }
