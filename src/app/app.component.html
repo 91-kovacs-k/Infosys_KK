@@ -70,11 +70,12 @@
                         <td>{{pizza.price}}</td>
                         <td>{{pizza.selected}}</td>
                         <td>
-                            <button class="btn btn-primary" *ngIf=" !selectedPizza.includes(pizza); else
+                            <button class="btn btn-primary custom" *ngIf=" !selectedPizza.includes(pizza); else
                                         buttonSelected2" (click)="selectPizza(pizza)">+</button>
                             <ng-template #buttonSelected2><button class="btn
-                                        btn-success" (click)="selectPizza(pizza)">+</button>
-                            </ng-template><button class="btn btn-danger" (click)="deselectPizza(pizza)">-</button>
+                                        btn-success custom" (click)="selectPizza(pizza)">+</button>
+                            </ng-template><button class="btn btn-danger custom ml-1"
+                                (click)="deselectPizza(pizza)">-</button>
                         </td>
                     </tr>
                 </tbody>
