@@ -1,0 +1,29 @@
+[
+    {
+        "id": 1,
+        "name": "Son-go-ku",
+        "description": "Paradicsomos alap, sonka, gomba, kukorica",
+        "size": 32,
+        "preparationTime": 20,
+        "price": 1000,
+        "selected": 0
+    },
+    {
+        "id": 2,
+        "name": "Hawaii",
+        "description": "Paradicsomos alap, sonka, ananász",
+        "size": 32,
+        "preparationTime": 20,
+        "price": 1000,
+        "selected": 0
+    },
+    {
+        "id": 3,
+        "name": "Tenger gyümölcsei",
+        "description": "Paradicsomos alap, rák, polip, szardella",
+        "size": 32,
+        "preparationTime": 20,
+        "price": 1000,
+        "selected": 0
+    }
+]

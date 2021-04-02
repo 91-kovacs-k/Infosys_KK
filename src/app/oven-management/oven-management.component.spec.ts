@@ -1,20 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SutoManagementComponent } from './suto-management.component';
+import { OvenManagementComponent } from './oven-management.component';
 
 describe('SutoManagementComponent', () => {
-  let component: SutoManagementComponent;
-  let fixture: ComponentFixture<SutoManagementComponent>;
+  let component: OvenManagementComponent;
+  let fixture: ComponentFixture<OvenManagementComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SutoManagementComponent ]
-    })
-    .compileComponents();
+      declarations: [OvenManagementComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SutoManagementComponent);
+    fixture = TestBed.createComponent(OvenManagementComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

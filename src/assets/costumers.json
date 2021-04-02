@@ -1,0 +1,20 @@
+[
+    {
+        "id": "1",
+        "name": "Kiss Jóska",
+        "address": "3600 Ózd, Vasvár út 7.",
+        "telephone": "+36301234567"
+    },
+    {
+        "id": "2",
+        "name": "Nagy Ferenc",
+        "address": "3500 Miskolc, Ady Endre út 18.",
+        "telephone": "+36205145236"
+    },
+    {
+        "id": "3",
+        "name": "Szabó Franciska",
+        "address": "3300 Eger, Petőfi Sándor út 202.",
+        "telephone": "+36707654321"
+    }
+]

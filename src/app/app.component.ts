@@ -1,90 +1,154 @@
-import { Component } from '@angular/core';
-import { Queue } from './models/Queue';
-import { Rendeles } from './models/Rendeles';
-import { Vevo } from './models/Vevo';
-import { SutoManagementComponent } from './suto-management/suto-management.component';
+import { Component, OnInit } from '@angular/core';
+import { Queue } from './models/queue';
+import { Order } from './models/order';
+import { LoadService } from './load.service';
+import { OvenManagementComponent } from './oven-management/oven-management.component';
+import { Costumer } from './models/costumer';
+import { Pizza } from './models/pizza';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'AngularBeadando';
 
+  private queue = new Queue<Order>(180); //180 a maximum várakozó pizza, mert 12 órát van nyitva a pizzéria egy nap, 5 sütő van és egy pizza 20 percig sül: 12*60/20*5=180
+  private orderLog: string = '';
+  private waitLog: string = '';
+  public costumers!: Costumer[];
+  public pizza!: Pizza[];
+  public selectedCostumer!: Costumer;
+  public selectedPizza: Pizza[] = [];
 
-  private varakozoSor = new Queue<Rendeles>(180); //180 a maximum várakozó pizza, mert 12 órát van nyitva a pizzéria egy nap, 5 sütő van és egy pizza 20 percig sül: 12*60/20*5=180
-  private rendelesLog: string = "";
-  private varakozasLog: string = "";
-  private szallitasIdo = 20;
+  kitchen = new OvenManagementComponent();
+  wrongPizzaAmount = false;
 
-  konyha = new SutoManagementComponent();
-  wrongPizzaDb = false;
+  constructor(private loadService: LoadService) {}
 
-  constructor() {
-
+  async ngOnInit() {
+    this.costumers = await this.loadService.loadCostumers();
+    this.pizza = await this.loadService.loadPizza();
   }
 
-  public rendeles(pizzaDB: number) {
-    if (!(pizzaDB > 0 && pizzaDB < 11)) {
-      this.wrongPizzaDb = true;
+  public resetSelection() {
+    this.selectedPizza = [];
+    this.pizza.forEach((pizza) => (pizza.selected = 0));
+    this.selectedCostumer = {
+      id: 0,
+      name: 'null',
+      address: 'null',
+      telephone: 'null',
+    };
+  }
+
+  public rendeles(costumer: Costumer, selectedPizza: Pizza[]) {
+    this.resetSelection();
+    let pizzaAmount = selectedPizza.length;
+    if (!(pizzaAmount > 0 && pizzaAmount < 11)) {
+      this.wrongPizzaAmount = true;
     } else {
-      this.wrongPizzaDb = false;
+      this.wrongPizzaAmount = false;
     }
-    if (!this.wrongPizzaDb) {
-      let vevo = new Vevo();
-      vevo.setNev("Kiss", "Jóska");
-      vevo.setCim(3500, "Miskolc", "Petőfi út", 130);
-      let rendeles = new Rendeles(vevo, pizzaDB);
+    if (!this.wrongPizzaAmount) {
+      let rendeles = new Order(costumer, pizzaAmount);
       let varakozas;
       this.rendelesLogger(rendeles);
-      if (this.varakozoSor.isEmpty()) {
-        this.varakozoSor.enqueue(rendeles);
+      if (this.queue.isEmpty()) {
+        this.queue.enqueue(rendeles);
 
-        varakozas = this.konyha.mikorKerulSorra(rendeles, this.varakozoSor);
-        this.konyha.Sut(this.varakozoSor);
+        varakozas = this.kitchen.mikorKerulSorra(rendeles, this.queue);
+        this.kitchen.Sut(this.queue);
       } else {
-        this.varakozoSor.enqueue(rendeles);
-       varakozas = this.konyha.mikorKerulSorra(rendeles, this.varakozoSor);
+        this.queue.enqueue(rendeles);
+        varakozas = this.kitchen.mikorKerulSorra(rendeles, this.queue);
       }
 
       this.varakozasLogger(rendeles, varakozas);
     }
   }
 
-  private rendelesLogger(rendeles: Rendeles) {
-    this.rendelesLog = this.rendelesLog + "A  #" + rendeles.getID() + " számú rendelését felvettük (" +
-      rendeles.getQuantity() + " db pizza).\nVevő: " + rendeles.getVevo().getNev() + ". Szállítási cím: " +
-      rendeles.getVevo().getCimek().getIrsz() + " " + rendeles.getVevo().getCimek().getVaros() + ", " +
-      rendeles.getVevo().getCimek().getUtca() + " " + rendeles.getVevo().getCimek().getHsz() + ".\n\n";
+  public selectCostumer(costumer: Costumer) {
+    this.selectedCostumer = costumer;
+  }
+
+  public selectPizza(pizza: Pizza) {
+    this.selectedPizza.push(pizza);
+    for (let i = 0; i < this.pizza.length; i++) {
+      if (this.pizza[i] == pizza) {
+        this.pizza[i].selected++;
+        break;
+      }
+    }
+  }
+
+  public deselectPizza(pizza: Pizza) {
+    let contained = false;
+    for (let i = 0; i < this.selectedPizza.length; i++) {
+      if (this.selectedPizza[i] == pizza) {
+        this.selectedPizza.splice(i, 1);
+        contained = true;
+        break;
+      }
+    }
+    if (contained) {
+      for (let i = 0; i < this.pizza.length; i++) {
+        if (this.pizza[i] == pizza) {
+          this.pizza[i].selected--;
+          break;
+        }
+      }
+    }
+  }
+
+  private rendelesLogger(rendeles: Order) {
+    this.orderLog =
+      this.orderLog +
+      'A  #' +
+      rendeles.getID() +
+      ' számú rendelését felvettük (' +
+      rendeles.getQuantity() +
+      ' db pizza).\nVevő: ' +
+      rendeles.getCostumer().name +
+      '. Szállítási cím: ' +
+      rendeles.getCostumer().address +
+      '\n\n';
   }
 
   public getRendelesLog() {
-    return this.rendelesLog;
+    return this.orderLog;
   }
 
-  private varakozasLogger(rendeles: Rendeles, varakozas: number) {
+  private varakozasLogger(rendeles: Order, varakozas: number) {
     let percString;
     let mpercString;
     let perc = Math.floor(varakozas / 60);
-    let mperc = varakozas - (perc * 60);
+    let mperc = varakozas - perc * 60;
     // perc += this.szallitasIdo;
 
-    if(perc < 10){
-      percString = "0"+ perc.toString();
-    }else{
+    if (perc < 10) {
+      percString = '0' + perc.toString();
+    } else {
       percString = perc.toString();
     }
-    if(mperc < 10){
-      mpercString = "0"+ mperc.toString();
-    }else{
+    if (mperc < 10) {
+      mpercString = '0' + mperc.toString();
+    } else {
       mpercString = mperc.toString();
     }
-    this.varakozasLog = this.varakozasLog + "A #" + rendeles.getID() + " számú rendelésre " + percString + ":" + mpercString + " kell várni!\n";
+    this.waitLog =
+      this.waitLog +
+      'A #' +
+      rendeles.getID() +
+      ' számú rendelésre ' +
+      percString +
+      ':' +
+      mpercString +
+      ' kell várni!\n';
   }
 
   public getVarakozasLog() {
-    return this.varakozasLog;
+    return this.waitLog;
   }
-
 }

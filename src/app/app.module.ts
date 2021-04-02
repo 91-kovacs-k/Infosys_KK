@@ -1,23 +1,21 @@
+import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { SutoManagementComponent } from './suto-management/suto-management.component';
+import { OvenManagementComponent } from './oven-management/oven-management.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    SutoManagementComponent,
-  ],
+  declarations: [AppComponent, OvenManagementComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    HttpClientModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}
