@@ -45,28 +45,21 @@ export class AppComponent implements OnInit {
 
   public rendeles(costumer: Costumer, selectedPizza: Pizza[]) {
     this.resetSelection();
-    let pizzaAmount = selectedPizza.length;
-    if (!(pizzaAmount > 0 && pizzaAmount < 11)) {
-      this.wrongPizzaAmount = true;
+
+    let rendeles = new Order(costumer, selectedPizza);
+    let varakozas;
+    this.rendelesLogger(rendeles);
+    if (this.queue.isEmpty()) {
+      this.queue.enqueue(rendeles);
+
+      varakozas = this.kitchen.mikorKerulSorra(rendeles, this.queue);
+      this.kitchen.Sut(this.queue);
     } else {
-      this.wrongPizzaAmount = false;
+      this.queue.enqueue(rendeles);
+      varakozas = this.kitchen.mikorKerulSorra(rendeles, this.queue);
     }
-    if (!this.wrongPizzaAmount) {
-      let rendeles = new Order(costumer, pizzaAmount);
-      let varakozas;
-      this.rendelesLogger(rendeles);
-      if (this.queue.isEmpty()) {
-        this.queue.enqueue(rendeles);
 
-        varakozas = this.kitchen.mikorKerulSorra(rendeles, this.queue);
-        this.kitchen.Sut(this.queue);
-      } else {
-        this.queue.enqueue(rendeles);
-        varakozas = this.kitchen.mikorKerulSorra(rendeles, this.queue);
-      }
-
-      this.varakozasLogger(rendeles, varakozas);
-    }
+    this.varakozasLogger(rendeles, varakozas);
   }
 
   public selectCostumer(costumer: Costumer) {
@@ -112,8 +105,36 @@ export class AppComponent implements OnInit {
       ' db pizza).\nVevő: ' +
       rendeles.getCostumer().name +
       '. Szállítási cím: ' +
-      rendeles.getCostumer().address +
-      '\n\n';
+      rendeles.getCostumer().address;
+    this.listSelectedPizza(rendeles.getSelectedPizza());
+  }
+
+  private listSelectedPizza(selectedPizza: Pizza[]) {
+    this.orderLog += '\nRendelt Pizzák: ';
+    let sum = 0;
+    selectedPizza.sort((a, b) => 0 - (a.name > b.name ? -1 : 1));
+    let tmp = 1;
+    this.orderLog += '\n' + selectedPizza[0].name;
+    sum += selectedPizza[0].price;
+    for (let i = 1; i < selectedPizza.length; i++) {
+      if (selectedPizza[i].name === selectedPizza[i - 1].name) {
+        tmp++;
+        sum += selectedPizza[i].price;
+      } else {
+        if (tmp > 1) {
+          this.orderLog += ' * ' + tmp + ',';
+          tmp = 1;
+        }
+        this.orderLog += '\n' + selectedPizza[i].name;
+        sum += selectedPizza[i].price;
+      }
+    }
+    if (tmp == 1) {
+      this.orderLog += '.';
+    } else {
+      this.orderLog += ' * ' + tmp + '.';
+    }
+    this.orderLog += '\n' + 'Ár: ' + sum + '.\n';
   }
 
   public getRendelesLog() {
