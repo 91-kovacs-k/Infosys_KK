@@ -74,7 +74,7 @@
         <div class="row justify-content-center mt-3">
             <div class="col-md-2 text-center">
                 <button class="submit btn btn-primary"
-                    [disabled]="selectedCostumer == null || selectedPizza.length == 0"
+                    [disabled]="!(selectedCostumer != null && selectedPizza.length != 0)"
                     (click)="makeOrder(selectedCostumer, selectedPizza)">Rendelés leadása</button>
             </div>
         </div>
