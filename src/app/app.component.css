@@ -10,6 +10,18 @@ input[type="number"]::-webkit-inner-spin-button {
   margin: 0;
 }
 .custom {
-  height: 200%;
-  width: 45%;
+  width: 5em;
+}
+.card {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  flex: 0 1 24%;
+  width: 15em;
+  height: 18em;
+}
+
+.card-costumer {
+  width: 15em;
+  height: 15em;
 }

@@ -6,127 +6,120 @@
     </div>
     <div class="row justify-content-center text-center mt-5">
         <div class="col-md-3">
-            <div class="form-group" *ngIf="kitchen.inicialized == false">
-                <input #db type="number" id="db" ngModel name="db" class="form-control text-center"
-                    placeholder="Add meg a sütők számát">
-                <label class="text-danger" *ngIf="kitchen.wrongAmount == true">1 és 10 közötti számot adj
-                    meg!</label>
-                <input #ido type="number" id="ido" ngModel name="ido" class="form-control text-center mt-2"
-                    placeholder="Add meg a sütés idejét!">
-                <label class="text-danger" *ngIf="kitchen.wrongTime == true">1 és 40 közötti számot adj
-                    meg!</label><br>
-                <button class="btn btn-primary"
-                    (click)="kitchen.sutoInicializalas(db.valueAsNumber, ido.valueAsNumber)">Nyitás</button>
+            <div *ngIf="kitchen.inicialized == false">
+                <form [formGroup]="ovenInicialization">
+                    <input type="number" class="form-control text-center" id="ovens" formControlName="ovens"
+                        placeholder="Add meg a sütők számát" required>
+                    <label class="text-danger" *ngIf="!ovenInicialization.valid">1 és 10 közötti számot adj
+                        meg!</label>
+                    <input type="number" class="form-control text-center mt-2" id="bakeTime" formControlName="bakeTime"
+                        placeholder="Add meg a sütés idejét" required>
+                    <label class="text-danger" *ngIf="!ovenInicialization.valid">1 és 40 közötti számot adj
+                        meg!</label><br>
+                    <button type="submit" class="btn btn-primary" [disabled]="!ovenInicialization.valid"
+                        (click)="kitchen.sutoInicializalas(ovenInicialization)">Nyitás</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
-<div class="container" *ngIf="kitchen.inicialized == true">
-    <div class="row justify-content-center text-center">
-        <div class="col-md-10">
-            <strong>Vevők</strong>
-            <table class="table table-striped table-bordered mt-2">
-                <thead>
-                    <tr>
-                        <th scope="col">Név</th>
-                        <th scope="col">Cím</th>
-                        <th scope="col">Telefonszám</th>
-                        <th scope="col">Kiválaszt</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let costumer of costumers">
-                        <td>{{costumer.name}}</td>
-                        <td>{{costumer.address}}</td>
-                        <td>{{costumer.telephone}}</td>
-                        <td>
-                            <button class="btn btn-primary" *ngIf="selectedCostumer!=costumer; else buttonSelected"
-                                (click)="selectCostumer(costumer)">Kiválaszt</button>
-                            <ng-template #buttonSelected><button class=" btn
-                                                    btn-success">Kiválaszt</button></ng-template>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+<div class="contanier" *ngIf="kitchen.inicialized == true">
+    <h3 class="text-center">Válassz vevőt!</h3>
+    <div class="container">
+        <div class="row mt-4 justify-content-center">
+            <div class="m-1" *ngFor="let costumer of costumers">
+
+                <div class="card card-costumer text-dark bg-light text-center ">
+                    <div class="card-header">{{costumer.name}}</div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{costumer.telephone}}</h5>
+                        <p class="card-text">{{costumer.address1}}<br />{{costumer.address2}}</p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <button class="btn btn-outline-primary col-md-12"
+                            *ngIf="selectedCostumer!=costumer; else buttonSelected"
+                            (click)="selectCostumer(costumer)">Kiválaszt</button>
+                        <ng-template #buttonSelected><button class=" btn
+                                                    btn-primary btn btn-primary col-md-12">Kiválaszt</button>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="row justify-content-center text-center">
-        <div class="col-md-10 ">
-            <strong>Pizzák</strong>
-            <table class="table table-striped table-bordered mt-2">
-                <thead>
-                    <tr>
-                        <th scope="col">Név</th>
-                        <th scope="col">Összetevők</th>
-                        <th scope="col">Ár</th>
-                        <th scope="col">Mennyiség</th>
-                        <th scope="col">Kiválaszt</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let pizza of pizza">
-                        <td>{{pizza.name}}</td>
-                        <td>{{pizza.description}}</td>
-                        <td>{{pizza.price}}</td>
-                        <td>{{pizza.selected}}</td>
-                        <td>
-                            <button class="btn btn-primary custom" *ngIf=" !selectedPizza.includes(pizza); else
+        <h3 class="text-center mt-3">Válassz pizzát!</h3>
+        <div class="row justify-content-center">
+
+            <div class="row mt-4 justify-content-center">
+                <div class="m-1 text-center" *ngFor="let pizza of pizza">
+
+                    <div class="card text-dark bg-light">
+                        <div class="card-header">{{pizza.name}}</div>
+                        <div class="card-body">
+                            <h3 class="card-title"><span class="badge badge-success">{{pizza.price}} Ft</span></h3>
+                            <p class="card-text">{{pizza.description}}<br />Rendelt mennyiség: {{pizza.selected}}</p>
+                        </div>
+                        <div class="card-footer text-center">
+                            <button class="btn btn-outline-primary custom" *ngIf=" !selectedPizza.includes(pizza); else
                                         buttonSelected2" (click)="selectPizza(pizza)">+</button>
                             <ng-template #buttonSelected2><button class="btn
-                                        btn-success custom" (click)="selectPizza(pizza)">+</button>
-                            </ng-template><button class="btn btn-danger custom ml-1"
+                                        btn-primary custom" (click)="selectPizza(pizza)">+</button>
+                            </ng-template><button class="btn btn-outline-danger custom ml-1"
                                 (click)="deselectPizza(pizza)">-</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
 
-    <div class="row justify-content-center">
-        <div class="col-md-2">
-            <button class="submit btn btn-primary float-right"
-                [disabled]="selectedCostumer == null || selectedPizza.length == 0"
-                (click)="rendeles(selectedCostumer, selectedPizza)">Pizza
-                rendelés</button>
+        <div class="row justify-content-center mt-3">
+            <div class="col-md-2 text-center">
+                <button class="submit btn btn-primary"
+                    [disabled]="selectedCostumer == null || selectedPizza.length == 0"
+                    (click)="makeOrder(selectedCostumer, selectedPizza)">Rendelés leadása</button>
+            </div>
         </div>
-    </div>
 
-</div>
-<div class="container">
+        <div class="container mt-4">
 
-    <div class="row justify-content-center" *ngIf="kitchen.inicialized == true">
-        <div class="col-md-3 text-center">
-            <strong>Sütők</strong>
-            <table class="table table-striped table-bordered mt-2">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Elérhető</th>
-                        <th scope="col">Sütőóra</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let suto of kitchen.ovens">
-                        <td>{{suto.getID()}}</td>
-                        <td>{{suto.getAvailability()}}</td>
-                        <td>{{suto.getOvenTimer().getMinutesString()}}:{{suto.getOvenTimer().getSecondsString()}}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="row justify-content-center">
+                <div class="col-md-3 text-center">
+                    <strong>Sütők</strong>
+                    <table class="table table-striped table-bordered mt-2">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Elérhetőség</th>
+                                <th scope="col">Sütőóra</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let oven of kitchen.ovens">
+                                <td>{{oven.getID()}}</td>
+                                <td>
+                                    <ng-container *ngIf="oven.getAvailability(); then szabad; else foglalt">
+                                    </ng-container>
+                                    <ng-template #szabad>Szabad</ng-template>
+                                    <ng-template #foglalt>Foglalt</ng-template>
+                                </td>
+                                <td>{{oven.getOvenTimer().getMinutesString()}}:{{oven.getOvenTimer().getSecondsString()}}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="row mt-5">
+                <div class="col-md-3 text-primary">
+                    <p style="white-space: pre;">{{getOrderLog()}}</p>
+                </div>
+                <div class="col-md-2"></div>
+                <div class="col-md-3 text-warning">
+                    <p style="white-space: pre;">{{getWaitLog()}}</p>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-3">
+                    <app-oven-management></app-oven-management>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="row mt-5">
-        <div class="col-md-3 text-primary">
-            <p style="white-space: pre;">{{getRendelesLog()}}</p>
-        </div>
-        <div class="col-md-2"></div>
-        <div class="col-md-3 text-warning">
-            <p style="white-space: pre;">{{getVarakozasLog()}}</p>
-        </div>
-        <div class="col-md-1"></div>
-        <div class="col-md-3">
-            <app-oven-management></app-oven-management>
-        </div>
-    </div>
-</div>

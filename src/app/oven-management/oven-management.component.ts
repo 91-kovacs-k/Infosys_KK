@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Order } from '../models/order';
 import { Queue } from '../models/queue';
 import { Oven } from '../models/oven';
+import { FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-oven-management',
@@ -15,7 +16,6 @@ export class OvenManagementComponent implements OnInit {
   bakingTime!: number; // sütés idő percben
   static readyLog: string = ''; // elkészült pizzák
   inicialized: boolean = false;
-  temp!: any;
   bakingInProgress = false;
   wrongAmount = false;
   wrongTime = false;
@@ -24,7 +24,9 @@ export class OvenManagementComponent implements OnInit {
 
   public constructor() {}
 
-  public sutoInicializalas(db: number, perc: number) {
+  public sutoInicializalas(fg: FormGroup) {
+    let db = fg.value.ovens;
+    let perc = fg.value.bakeTime;
     if (!(perc > 0 && perc < 41)) {
       this.wrongTime = true;
     } else {
@@ -49,43 +51,43 @@ export class OvenManagementComponent implements OnInit {
     }
   }
 
-  public async Sut(sor: Queue<Order>) {
+  public async bake(queue: Queue<Order>) {
     if (this.inicialized) {
       this.bakingInProgress = true;
-      while (!sor.isEmpty()) {
-        let mindFoglalt = true;
+      while (!queue.isEmpty()) {
+        let everyOvenBusy = true;
         for (let i = 0; i < this.ovens.length; i++) {
           if (this.ovens[i].getAvailability() == true) {
-            mindFoglalt = false;
+            everyOvenBusy = false;
             break;
           }
         }
-        if (!mindFoglalt) {
+        if (!everyOvenBusy) {
           for (let i = 0; i < this.ovens.length; i++) {
             if (this.ovens[i].getAvailability()) {
-              if (sor.peek().getRemainingQuantity() == 1) {
-                this.pizzaSutes(
+              if (queue.peek().getRemainingQuantity() == 1) {
+                this.bakePizza(
                   this.ovens[i],
-                  sor.peek().getID(),
-                  sor.peek().getRemainingQuantity(),
-                  sor.peek().getQuantity()
+                  queue.peek().getID(),
+                  queue.peek().getRemainingQuantity(),
+                  queue.peek().getQuantity()
                 );
-                sor.dequeue();
+                queue.dequeue();
               } else {
-                this.pizzaSutes(
+                this.bakePizza(
                   this.ovens[i],
-                  sor.peek().getID(),
-                  sor.peek().getRemainingQuantity(),
-                  sor.peek().getQuantity()
+                  queue.peek().getID(),
+                  queue.peek().getRemainingQuantity(),
+                  queue.peek().getQuantity()
                 );
-                sor.peek().DecrementRemainingQuantity();
+                queue.peek().DecrementRemainingQuantity();
               }
             } else {
               continue;
             }
           }
         } else {
-          await this.sutoreVar();
+          await this.waitingForOven();
         }
       }
       this.bakingInProgress = false;
@@ -94,26 +96,26 @@ export class OvenManagementComponent implements OnInit {
     }
   }
 
-  private async pizzaSutes(
-    suto: Oven,
+  private async bakePizza(
+    oven: Oven,
     ID: number,
     remaining: number,
     quantity: number
   ) {
-    suto.setAvailability(false);
+    oven.setAvailability(false);
     for (let i = 0; i < this.bakingTime; i++) {
       for (let j = 0; j < 60; j++) {
-        await this.pizzaraVar(1);
-        suto.getOvenTimer().setSeconds(j + 1);
+        await this.waitingForPizza(1);
+        oven.getOvenTimer().setSeconds(j + 1);
       }
-      suto.getOvenTimer().setSeconds(0);
-      suto.getOvenTimer().setMinutes(i + 1);
+      oven.getOvenTimer().setSeconds(0);
+      oven.getOvenTimer().setMinutes(i + 1);
     }
-    suto.getOvenTimer().Reset();
-    suto.setAvailability(true);
+    oven.getOvenTimer().Reset();
+    oven.setAvailability(true);
 
     if (remaining == 1) {
-      OvenManagementComponent.elkeszultLogger(
+      OvenManagementComponent.readyLogger(
         'Elkészült a #' +
           ID +
           ' rendelés ' +
@@ -123,7 +125,7 @@ export class OvenManagementComponent implements OnInit {
           ' pizzája.\n'
       );
     } else {
-      OvenManagementComponent.elkeszultLogger(
+      OvenManagementComponent.readyLogger(
         'Elkészült a #' +
           ID +
           ' rendelés ' +
@@ -136,30 +138,30 @@ export class OvenManagementComponent implements OnInit {
     return new Promise((resolve) => setTimeout(resolve, 0));
   }
 
-  private pizzaraVar(ms: number) {
+  private waitingForPizza(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms * 1000));
   }
 
-  private async sutoreVar() {
+  private async waitingForOven() {
     let waitTime = 0;
     for (let i = 0; i < this.ovens.length; i++) {
       if (this.ovens[i].timeCompare(waitTime)) {
         waitTime = this.ovens[i].getTimeInSeconds();
       }
     }
-    await this.pizzaraVar(this.bakingTime * 60 - waitTime);
+    await this.waitingForPizza(this.bakingTime * 60 - waitTime);
     return new Promise((resolve) => setTimeout(resolve, 0));
   }
 
-  private static elkeszultLogger(str: string) {
+  private static readyLogger(str: string) {
     this.readyLog = this.readyLog + str;
   }
 
-  public static getElkeszultLog() {
+  public static getReadyLog() {
     return this.readyLog;
   }
 
-  public mikorKerulSorra(order: Order, sor: Queue<Order>) {
+  public whenWillStartBaking(order: Order, sor: Queue<Order>) {
     let everyOvenIsFree = true;
     for (let i = 0; i < this.ovens.length; i++) {
       if (this.ovens[i].getAvailability() == false) {
@@ -168,77 +170,77 @@ export class OvenManagementComponent implements OnInit {
       }
     }
     if (everyOvenIsFree) {
-      let kezdoSorszam = 0;
+      let startingNumber = 0;
       let retval = 0;
       for (let i = 0; i < sor.getLength(); i++) {
         if (sor.getObjectByNumber(i).getID() == order.getID()) {
-          kezdoSorszam++;
+          startingNumber++;
         } else {
-          kezdoSorszam += sor.getObjectByNumber(i).getRemainingQuantity();
+          startingNumber += sor.getObjectByNumber(i).getRemainingQuantity();
         }
       }
-      let utolsoSorszam = kezdoSorszam + order.getQuantity() - 1;
-      let joSorszam = 0;
-      if (utolsoSorszam >= this.ovens.length) {
-        joSorszam = utolsoSorszam - this.ovens.length;
-        let tmp = Math.ceil(joSorszam / this.ovens.length);
+      let lastNumber = startingNumber + order.getQuantity() - 1;
+      let waitingNumber = 0;
+      if (lastNumber >= this.ovens.length) {
+        waitingNumber = lastNumber - this.ovens.length;
+        let tmp = Math.ceil(waitingNumber / this.ovens.length);
         return (tmp + 1) * this.bakingTime * 60;
       } else {
         return this.bakingTime * 60;
       }
     } else {
-      let orak = new Array(this.ovens.length);
+      let timers = new Array(this.ovens.length);
       for (let i = 0; i < this.ovens.length; i++) {
-        orak[i] = this.bakingTime * 60 - this.ovens[i].getTimeInSeconds();
+        timers[i] = this.bakingTime * 60 - this.ovens[i].getTimeInSeconds();
       }
-      orak.sort((a, b) => a - b);
-      let kezdoSorszam = 0;
+      timers.sort((a, b) => a - b);
+      let startingNumber = 0;
       let retval = 0;
       for (let i = 0; i < sor.getLength(); i++) {
         if (sor.getObjectByNumber(i).getID() == order.getID()) {
-          kezdoSorszam++;
+          startingNumber++;
         } else {
-          kezdoSorszam += sor.getObjectByNumber(i).getRemainingQuantity();
+          startingNumber += sor.getObjectByNumber(i).getRemainingQuantity();
         }
       }
-      let utolsoSorszam = kezdoSorszam + order.getQuantity() - 1;
-      let seged;
-      let sorszam;
-      if (utolsoSorszam >= this.ovens.length) {
-        seged = Math.floor(utolsoSorszam / this.ovens.length);
-        sorszam = utolsoSorszam - seged * this.ovens.length;
+      let lastNumber = startingNumber + order.getQuantity() - 1;
+      let waitingNumber;
+      let number;
+      if (lastNumber >= this.ovens.length) {
+        waitingNumber = Math.floor(lastNumber / this.ovens.length);
+        number = lastNumber - waitingNumber * this.ovens.length;
       } else {
-        sorszam = utolsoSorszam;
+        number = lastNumber;
       }
-      let kivalasztott = -1;
+      let selected = -1;
 
-      if (sorszam == 0) {
-        kivalasztott = 0;
+      if (number == 0) {
+        selected = 0;
       } else {
-        while (sorszam != 0) {
-          if (kivalasztott == orak.length - 1) {
-            kivalasztott = 0;
+        while (number != 0) {
+          if (selected == timers.length - 1) {
+            selected = 0;
           } else {
-            kivalasztott++;
+            selected++;
           }
-          sorszam--;
+          number--;
         }
       }
 
-      let szorzo = Math.ceil(utolsoSorszam / this.ovens.length);
-      retval = szorzo * (this.bakingTime * 60);
+      let multiplier = Math.ceil(lastNumber / this.ovens.length);
+      retval = multiplier * (this.bakingTime * 60);
 
-      if (this.vanSzabadSuto(utolsoSorszam)) {
+      if (this.areThereFreeOvens(lastNumber)) {
         return retval;
       } else {
         //retval += this.sutesIdo * 60;
-        retval += orak[kivalasztott];
+        retval += timers[selected];
       }
       return retval;
     }
   }
 
-  public vanSzabadSuto(n: number) {
+  public areThereFreeOvens(n: number) {
     let count = 0;
     for (let i = 0; i < this.ovens.length; i++) {
       if (this.ovens[i].getAvailability()) {

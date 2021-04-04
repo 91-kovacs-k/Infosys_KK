@@ -5,6 +5,7 @@ import { LoadService } from './load.service';
 import { OvenManagementComponent } from './oven-management/oven-management.component';
 import { Costumer } from './models/costumer';
 import { Pizza } from './models/pizza';
+import { FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -22,10 +23,17 @@ export class AppComponent implements OnInit {
   public selectedCostumer!: Costumer;
   public selectedPizza: Pizza[] = [];
 
-  kitchen = new OvenManagementComponent();
-  wrongPizzaAmount = false;
+  ovenInicialization = this.fb.group({
+    ovens: ['', [Validators.required, Validators.min(1), Validators.max(10)]],
+    bakeTime: [
+      '',
+      [Validators.required, Validators.min(1), Validators.max(40)],
+    ],
+  });
 
-  constructor(private loadService: LoadService) {}
+  kitchen = new OvenManagementComponent();
+
+  constructor(private loadService: LoadService, private fb: FormBuilder) {}
 
   async ngOnInit() {
     this.costumers = await this.loadService.loadCostumers();
@@ -38,28 +46,29 @@ export class AppComponent implements OnInit {
     this.selectedCostumer = {
       id: 0,
       name: 'null',
-      address: 'null',
+      address1: 'null',
+      address2: 'null',
       telephone: 'null',
     };
   }
 
-  public rendeles(costumer: Costumer, selectedPizza: Pizza[]) {
+  public makeOrder(costumer: Costumer, selectedPizza: Pizza[]) {
     this.resetSelection();
 
-    let rendeles = new Order(costumer, selectedPizza);
-    let varakozas;
-    this.rendelesLogger(rendeles);
+    let order = new Order(costumer, selectedPizza);
+    let waitTime;
+    this.orderLogger(order);
     if (this.queue.isEmpty()) {
-      this.queue.enqueue(rendeles);
+      this.queue.enqueue(order);
 
-      varakozas = this.kitchen.mikorKerulSorra(rendeles, this.queue);
-      this.kitchen.Sut(this.queue);
+      waitTime = this.kitchen.whenWillStartBaking(order, this.queue);
+      this.kitchen.bake(this.queue);
     } else {
-      this.queue.enqueue(rendeles);
-      varakozas = this.kitchen.mikorKerulSorra(rendeles, this.queue);
+      this.queue.enqueue(order);
+      waitTime = this.kitchen.whenWillStartBaking(order, this.queue);
     }
 
-    this.varakozasLogger(rendeles, varakozas);
+    this.waitLogger(order, waitTime);
   }
 
   public selectCostumer(costumer: Costumer) {
@@ -95,18 +104,19 @@ export class AppComponent implements OnInit {
     }
   }
 
-  private rendelesLogger(rendeles: Order) {
+  private orderLogger(order: Order) {
     this.orderLog =
       this.orderLog +
       'A  #' +
-      rendeles.getID() +
+      order.getID() +
       ' számú rendelését felvettük (' +
-      rendeles.getQuantity() +
+      order.getQuantity() +
       ' db pizza).\nVevő: ' +
-      rendeles.getCostumer().name +
+      order.getCostumer().name +
       '. Szállítási cím: ' +
-      rendeles.getCostumer().address;
-    this.listSelectedPizza(rendeles.getSelectedPizza());
+      order.getCostumer().address1 +
+      order.getCostumer().address2;
+    this.listSelectedPizza(order.getSelectedPizza());
   }
 
   private listSelectedPizza(selectedPizza: Pizza[]) {
@@ -114,7 +124,7 @@ export class AppComponent implements OnInit {
     let sum = 0;
     selectedPizza.sort((a, b) => 0 - (a.name > b.name ? -1 : 1));
     let tmp = 1;
-    this.orderLog += '\n' + selectedPizza[0].name;
+    this.orderLog += '\n' + ' - ' + selectedPizza[0].name;
     sum += selectedPizza[0].price;
     for (let i = 1; i < selectedPizza.length; i++) {
       if (selectedPizza[i].name === selectedPizza[i - 1].name) {
@@ -122,10 +132,10 @@ export class AppComponent implements OnInit {
         sum += selectedPizza[i].price;
       } else {
         if (tmp > 1) {
-          this.orderLog += ' * ' + tmp + ',';
+          this.orderLog += ' * ' + tmp;
           tmp = 1;
         }
-        this.orderLog += '\n' + selectedPizza[i].name;
+        this.orderLog += ',\n - ' + selectedPizza[i].name;
         sum += selectedPizza[i].price;
       }
     }
@@ -137,39 +147,39 @@ export class AppComponent implements OnInit {
     this.orderLog += '\n' + 'Ár: ' + sum + '.\n';
   }
 
-  public getRendelesLog() {
+  public getOrderLog() {
     return this.orderLog;
   }
 
-  private varakozasLogger(rendeles: Order, varakozas: number) {
-    let percString;
-    let mpercString;
-    let perc = Math.floor(varakozas / 60);
-    let mperc = varakozas - perc * 60;
-    // perc += this.szallitasIdo;
+  private waitLogger(order: Order, waitTime: number) {
+    let minutesInString;
+    let secondsInString;
+    let minutes = Math.floor(waitTime / 60);
+    let seconds = waitTime - minutes * 60;
+    // minutes += 20;  // a szállítás idejét hozzáadom
 
-    if (perc < 10) {
-      percString = '0' + perc.toString();
+    if (minutes < 10) {
+      minutesInString = '0' + minutes.toString();
     } else {
-      percString = perc.toString();
+      minutesInString = minutes.toString();
     }
-    if (mperc < 10) {
-      mpercString = '0' + mperc.toString();
+    if (seconds < 10) {
+      secondsInString = '0' + seconds.toString();
     } else {
-      mpercString = mperc.toString();
+      secondsInString = seconds.toString();
     }
     this.waitLog =
       this.waitLog +
       'A #' +
-      rendeles.getID() +
+      order.getID() +
       ' számú rendelésre ' +
-      percString +
+      minutesInString +
       ':' +
-      mpercString +
+      secondsInString +
       ' kell várni!\n';
   }
 
-  public getVarakozasLog() {
+  public getWaitLog() {
     return this.waitLog;
   }
 }
