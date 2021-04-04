@@ -3,11 +3,28 @@ export class Oven {
   private id: number; // sütő azonosító
   private ovenTimer: Time; // óra típusú változó ami az adott sütő órája lesz
   private availability: boolean; // elérhető-e vagy sem az adott sütő
+  order!: number; // melyik rendelés pizzáját süti
+  pizza!: number; // a rendelés hányadik pizzáját süti
+  progress: number; // hol tart a sütésben %-ban
 
   public constructor() {
     this.id = Oven.setID();
     this.availability = true;
     this.ovenTimer = new Time();
+    this.progress = 0;
+  }
+
+  public setProduct(id: number, quantityNumber: number) {
+    this.order = id;
+    this.pizza = quantityNumber;
+  }
+
+  public getOrder() {
+    return this.order;
+  }
+
+  public getPizza() {
+    return this.pizza;
   }
 
   public getID() {

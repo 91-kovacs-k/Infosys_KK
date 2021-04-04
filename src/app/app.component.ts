@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Queue } from './models/queue';
 import { Order } from './models/order';
 import { LoadService } from './load.service';
@@ -6,6 +6,7 @@ import { OvenManagementComponent } from './oven-management/oven-management.compo
 import { Costumer } from './models/costumer';
 import { Pizza } from './models/pizza';
 import { FormBuilder, Validators } from '@angular/forms';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -15,13 +16,15 @@ import { FormBuilder, Validators } from '@angular/forms';
 export class AppComponent implements OnInit {
   title = 'AngularBeadando';
 
-  private queue = new Queue<Order>(180); //180 a maximum várakozó pizza, mert 12 órát van nyitva a pizzéria egy nap, 5 sütő van és egy pizza 20 percig sül: 12*60/20*5=180
+  public queue = new Queue<Order>(180); //180 a maximum várakozó pizza, mert 12 órát van nyitva a pizzéria egy nap, 5 sütő van és egy pizza 20 percig sül: 12*60/20*5=180
   private orderLog: string = '';
   private waitLog: string = '';
   public costumers!: Costumer[];
   public pizza!: Pizza[];
   public selectedCostumer!: Costumer;
   public selectedPizza: Pizza[] = [];
+  public costumerIsSelected: boolean = false;
+  public orders: Order[] = [];
 
   ovenInicialization = this.fb.group({
     ovens: ['', [Validators.required, Validators.min(1), Validators.max(10)]],
@@ -43,6 +46,7 @@ export class AppComponent implements OnInit {
   public resetSelection() {
     this.selectedPizza = [];
     this.pizza.forEach((pizza) => (pizza.selected = 0));
+    this.costumerIsSelected = false;
     this.selectedCostumer = {
       id: 0,
       name: 'null',
@@ -52,12 +56,12 @@ export class AppComponent implements OnInit {
     };
   }
 
-  public makeOrder(costumer: Costumer, selectedPizza: Pizza[]) {
+  public requestOrder(costumer: Costumer, selectedPizza: Pizza[]) {
     this.resetSelection();
-
     let order = new Order(costumer, selectedPizza);
     let waitTime;
-    this.orderLogger(order);
+    this.orders.push(order);
+    //this.orderLogger(order);
     if (this.queue.isEmpty()) {
       this.queue.enqueue(order);
 
@@ -68,11 +72,17 @@ export class AppComponent implements OnInit {
       waitTime = this.kitchen.whenWillStartBaking(order, this.queue);
     }
 
-    this.waitLogger(order, waitTime);
+    order.waitLogger(order, waitTime);
+  }
+
+  public calculateWaitTime(order: Order) {
+    let waitTime = this.kitchen.calculateWait(order, this.queue);
+    order.waitLogger(order, waitTime);
   }
 
   public selectCostumer(costumer: Costumer) {
     this.selectedCostumer = costumer;
+    this.costumerIsSelected = true;
   }
 
   public selectPizza(pizza: Pizza) {
@@ -103,7 +113,7 @@ export class AppComponent implements OnInit {
       }
     }
   }
-
+  /*
   private orderLogger(order: Order) {
     this.orderLog =
       this.orderLog +
@@ -182,4 +192,5 @@ export class AppComponent implements OnInit {
   public getWaitLog() {
     return this.waitLog;
   }
+*/
 }

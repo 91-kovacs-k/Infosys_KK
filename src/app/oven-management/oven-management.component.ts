@@ -24,7 +24,7 @@ export class OvenManagementComponent implements OnInit {
 
   public constructor() {}
 
-  public sutoInicializalas(fg: FormGroup) {
+  public ovenInicialization(fg: FormGroup) {
     let db = fg.value.ovens;
     let perc = fg.value.bakeTime;
     if (!(perc > 0 && perc < 41)) {
@@ -103,14 +103,23 @@ export class OvenManagementComponent implements OnInit {
     quantity: number
   ) {
     oven.setAvailability(false);
+    oven.setProduct(ID, quantity - remaining + 1);
     for (let i = 0; i < this.bakingTime; i++) {
       for (let j = 0; j < 60; j++) {
         await this.waitingForPizza(1);
         oven.getOvenTimer().setSeconds(j + 1);
+        oven.progress = Math.ceil(
+          ((oven.getOvenTimer().getMinutes() * 60 +
+            oven.getOvenTimer().getSeconds()) /
+            (this.bakingTime * 60)) *
+            100
+        );
       }
       oven.getOvenTimer().setSeconds(0);
       oven.getOvenTimer().setMinutes(i + 1);
     }
+    oven.progress = 0;
+    oven.setProduct(0, 0);
     oven.getOvenTimer().Reset();
     oven.setAvailability(true);
 
@@ -161,7 +170,7 @@ export class OvenManagementComponent implements OnInit {
     return this.readyLog;
   }
 
-  public whenWillStartBaking(order: Order, sor: Queue<Order>) {
+  public whenWillStartBaking(order: Order, queue: Queue<Order>) {
     let everyOvenIsFree = true;
     for (let i = 0; i < this.ovens.length; i++) {
       if (this.ovens[i].getAvailability() == false) {
@@ -172,11 +181,11 @@ export class OvenManagementComponent implements OnInit {
     if (everyOvenIsFree) {
       let startingNumber = 0;
       let retval = 0;
-      for (let i = 0; i < sor.getLength(); i++) {
-        if (sor.getObjectByNumber(i).getID() == order.getID()) {
+      for (let i = 0; i < queue.getLength(); i++) {
+        if (queue.getObjectByNumber(i).getID() == order.getID()) {
           startingNumber++;
         } else {
-          startingNumber += sor.getObjectByNumber(i).getRemainingQuantity();
+          startingNumber += queue.getObjectByNumber(i).getRemainingQuantity();
         }
       }
       let lastNumber = startingNumber + order.getQuantity() - 1;
@@ -196,11 +205,11 @@ export class OvenManagementComponent implements OnInit {
       timers.sort((a, b) => a - b);
       let startingNumber = 0;
       let retval = 0;
-      for (let i = 0; i < sor.getLength(); i++) {
-        if (sor.getObjectByNumber(i).getID() == order.getID()) {
+      for (let i = 0; i < queue.getLength(); i++) {
+        if (queue.getObjectByNumber(i).getID() == order.getID()) {
           startingNumber++;
         } else {
-          startingNumber += sor.getObjectByNumber(i).getRemainingQuantity();
+          startingNumber += queue.getObjectByNumber(i).getRemainingQuantity();
         }
       }
       let lastNumber = startingNumber + order.getQuantity() - 1;
@@ -251,6 +260,67 @@ export class OvenManagementComponent implements OnInit {
       return true;
     } else {
       return false;
+    }
+  }
+
+  public calculateWait(order: Order, queue: Queue<Order>) {
+    let retval = -1;
+    let inQueue = false;
+    for (let i = 0; i < queue.getLength(); i++) {
+      if (queue.getObjectByNumber(i).getID() == order.getID()) {
+        inQueue = true;
+        break;
+      }
+    }
+    if (inQueue) {
+      let startingNumber = 0;
+      for (let i = 0; i < queue.getLength(); i++) {
+        if (queue.getObjectByNumber(i).getID() == order.getID()) {
+          startingNumber++;
+          break;
+        } else {
+          startingNumber += queue.getObjectByNumber(i).getRemainingQuantity();
+        }
+      }
+      let lastNumber = startingNumber + order.getRemainingQuantity() - 1;
+      let multiplier = Math.ceil(lastNumber / this.ovens.length);
+      let selected = -1;
+      let number = lastNumber;
+
+      let timers = new Array(this.ovens.length);
+      for (let i = 0; i < this.ovens.length; i++) {
+        timers[i] = this.bakingTime * 60 - this.ovens[i].getTimeInSeconds();
+      }
+      timers.sort((a, b) => a - b);
+
+      while (number != 0) {
+        if (selected == timers.length - 1) {
+          selected = 0;
+        } else {
+          selected++;
+        }
+        number--;
+      }
+
+      retval = multiplier * this.bakingTime * 60;
+      retval += timers[selected];
+      alert(retval);
+      return retval;
+    } else {
+      for (let i = 0; i < this.ovens.length; i++) {
+        if (this.ovens[i].getOrder() == order.getID()) {
+          if (this.ovens[i].getPizza() == order.getQuantity()) {
+            retval =
+              this.ovens[i].getOvenTimer().getMinutes() * 60 +
+              this.ovens[i].getOvenTimer().getSeconds();
+          }
+        }
+      }
+    }
+    if (retval > -1) {
+      return this.bakingTime * 60 - retval;
+    } else {
+      return 0;
     }
   }
 }

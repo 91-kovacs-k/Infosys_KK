@@ -16,8 +16,12 @@
                         placeholder="Add meg a sütés idejét" required>
                     <label class="text-danger" *ngIf="!ovenInicialization.valid">1 és 40 közötti számot adj
                         meg!</label><br>
+                    <!--
                     <button type="submit" class="btn btn-primary" [disabled]="!ovenInicialization.valid"
                         (click)="kitchen.sutoInicializalas(ovenInicialization)">Nyitás</button>
+                        -->
+                    <button type="submit" class="btn btn-primary" [disabled]="!ovenInicialization.valid"
+                        (click)="kitchen.ovenInicialization(ovenInicialization)">Nyitás</button>
                 </form>
             </div>
         </div>
@@ -73,53 +77,109 @@
 
         <div class="row justify-content-center mt-3">
             <div class="col-md-2 text-center">
-                <button class="submit btn btn-primary"
-                    [disabled]="!(selectedCostumer != null && selectedPizza.length != 0)"
-                    (click)="makeOrder(selectedCostumer, selectedPizza)">Rendelés leadása</button>
+                <button class="submit btn btn-primary" [disabled]="(!costumerIsSelected || selectedPizza.length == 0)"
+                    (click)="requestOrder(selectedCostumer, selectedPizza)">Rendelés
+                    leadása</button>
             </div>
         </div>
+    </div>
+</div>
+<div class="container mt-4" *ngIf="kitchen.inicialized == true">
+    <div class="row justify-content-center">
+        <div class="col-md-3 text-center">
+            <strong>Sütők</strong>
+            <table class="table table-striped table-bordered mt-2">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Állapot</th>
+                        <th scope="col">Sütőóra</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let oven of kitchen.ovens">
+                        <td>{{oven.getID()}}</td>
+                        <td>
+                            <ng-container *ngIf="oven.getAvailability(); then szabad; else foglalt">
+                            </ng-container>
+                            <ng-template #szabad>Szabad</ng-template>
+                            <ng-template #foglalt>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-striped bg-info progress-bar-animated"
+                                        role="progressbar" [style.width]="oven.progress + '%'"
+                                        attr.aria-valuenow={{oven.progress}} aria-valuemin="
+                                            0" aria-valuemax="100"></div>
+                                </div>
+                            </ng-template>
+                        </td>
+                        <td>
+                            {{oven.getOvenTimer().getMinutesString()}}:{{oven.getOvenTimer().getSecondsString()}}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
-        <div class="container mt-4">
+<div class="container" *ngIf="kitchen.inicialized == true">
 
-            <div class="row justify-content-center">
-                <div class="col-md-3 text-center">
-                    <strong>Sütők</strong>
-                    <table class="table table-striped table-bordered mt-2">
-                        <thead>
-                            <tr>
-                                <th scope="col">#</th>
-                                <th scope="col">Elérhetőség</th>
-                                <th scope="col">Sütőóra</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let oven of kitchen.ovens">
-                                <td>{{oven.getID()}}</td>
-                                <td>
-                                    <ng-container *ngIf="oven.getAvailability(); then szabad; else foglalt">
-                                    </ng-container>
-                                    <ng-template #szabad>Szabad</ng-template>
-                                    <ng-template #foglalt>Foglalt</ng-template>
-                                </td>
-                                <td>{{oven.getOvenTimer().getMinutesString()}}:{{oven.getOvenTimer().getSecondsString()}}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="row mt-5">
-                <div class="col-md-3 text-primary">
-                    <p style="white-space: pre;">{{getOrderLog()}}</p>
-                </div>
-                <div class="col-md-2"></div>
-                <div class="col-md-3 text-warning">
-                    <p style="white-space: pre;">{{getWaitLog()}}</p>
-                </div>
-                <div class="col-md-1"></div>
-                <div class="col-md-3">
-                    <app-oven-management></app-oven-management>
+    <h3 class="text-center mt-3">Felvett rendelések</h3>
+    <div class="row justify-content-center">
+
+        <div class="row mt-4 justify-content-center">
+            <div class="m-1" *ngFor="let order of orders">
+
+                <div class="card card-order text-dark bg-light">
+                    <div class="card-header">#{{order.getID()}}</div>
+                    <div class="card-body">
+                        <h3 class="card-title">{{order.getCostumer().name}}</h3>
+                        <p class="card-text">{{order.getOrderLog()}}<br />{{order.getWaitLog()}}</p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <!--
+                        <button class="btn btn-outline-primary custom" *ngIf=" !selectedPizza.includes(pizza); else
+                                    buttonSelected2" (click)="selectPizza(pizza)">+</button>
+                        <ng-template #buttonSelected2><button class="btn
+                                    btn-primary custom" (click)="selectPizza(pizza)">+</button>
+                        </ng-template><button class="btn btn-outline-danger custom ml-1"
+                            (click)="deselectPizza(pizza)">-</button>
+-->
+                        <button class="btn btn-outline-primary custom"
+                            (click)="calculateWaitTime(order)">Frissítés</button>
+
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!--
+
+    <div class="row mt-5">
+        <div class="col-md-3 text-primary">
+            <p style="white-space: pre;">{{getOrderLog()}}</p>
+        </div>
+       
+    <div class="col-md-2"></div>
+    <div class="col-md-3 text-warning">
+        <p style="white-space: pre;">{{getWaitLog()}}</p>
+    </div>
+    <div class="col-md-1"></div>
+    <div class="col-md-3">
+        <app-oven-management></app-oven-management>
+    </div>
+</div>
+ -->

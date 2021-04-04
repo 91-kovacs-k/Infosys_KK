@@ -25,3 +25,9 @@ input[type="number"]::-webkit-inner-spin-button {
   width: 15em;
   height: 15em;
 }
+
+.card-order {
+  white-space: pre;
+  width: 20em;
+  height: 25em;
+}

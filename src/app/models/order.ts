@@ -8,6 +8,8 @@ export class Order {
   private remainingQuantity: number; // hátralévő mennyiség
   private costumer: Costumer; // vevő
   private selectedPizza!: Pizza[]; // a rendelt pizzák
+  private orderLog: string = ''; // rendeléshez tartozó információk
+  private waitLog: string = ''; // az elkészülés idejéhez tartozó információk
 
   // konstruktorban darabszámot vár, amivel beállítja, hogy mennyi mennyi pizzát rendeltek
   public constructor(costumer: Costumer, selectedPizza: Pizza[]) {
@@ -16,6 +18,7 @@ export class Order {
     this.remainingQuantity = selectedPizza.length; // hátralévő darabszám beállítása
     this.costumer = costumer; // vevő beállítása
     this.selectedPizza = selectedPizza;
+    this.orderLogger();
   }
   // get ID
   public getID() {
@@ -44,5 +47,82 @@ export class Order {
   // ID beállítása
   private static setID() {
     return Order.varForId++;
+  }
+
+  private orderLogger() {
+    this.orderLog =
+      this.orderLog +
+      'Szállítási cím: ' +
+      this.getCostumer().address1 +
+      '\n' +
+      this.getCostumer().address2;
+    this.listSelectedPizza(this.getSelectedPizza());
+  }
+
+  private listSelectedPizza(selectedPizza: Pizza[]) {
+    this.orderLog += '\nRendelt Pizzák: ';
+    let sum = 0;
+    selectedPizza.sort((a, b) => 0 - (a.name > b.name ? -1 : 1));
+    let tmp = 1;
+    this.orderLog += '\n' + ' - ' + selectedPizza[0].name;
+    sum += selectedPizza[0].price;
+    for (let i = 1; i < selectedPizza.length; i++) {
+      if (selectedPizza[i].name === selectedPizza[i - 1].name) {
+        tmp++;
+        sum += selectedPizza[i].price;
+      } else {
+        if (tmp > 1) {
+          this.orderLog += ' * ' + tmp;
+          tmp = 1;
+        }
+        this.orderLog += ',\n - ' + selectedPizza[i].name;
+        sum += selectedPizza[i].price;
+      }
+    }
+    if (tmp == 1) {
+      this.orderLog += '.';
+    } else {
+      this.orderLog += ' * ' + tmp + '.';
+    }
+    this.orderLog += '\n' + 'Ár: ' + sum + '.\n';
+  }
+
+  public getOrderLog() {
+    return this.orderLog;
+  }
+
+  public waitLogger(order: Order, waitTime: number) {
+    if (waitTime == 0) {
+      this.waitLog = 'A rendelés elkészült!';
+    } else {
+      let minutesInString;
+      let secondsInString;
+      let minutes = Math.floor(waitTime / 60);
+      alert('perc: ' + minutes);
+      let seconds = waitTime - minutes * 60;
+      alert('mperc: ' + seconds);
+      // minutes += 20;  // a szállítás idejét hozzáadom
+
+      if (minutes < 10) {
+        minutesInString = '0' + minutes.toString();
+      } else {
+        minutesInString = minutes.toString();
+      }
+      if (seconds < 10) {
+        secondsInString = '0' + seconds.toString();
+      } else {
+        secondsInString = seconds.toString();
+      }
+      this.waitLog =
+        'Az elkészülésig ' +
+        minutesInString +
+        ':' +
+        secondsInString +
+        ' van hátra!\n';
+    }
+  }
+
+  public getWaitLog() {
+    return this.waitLog;
   }
 }
