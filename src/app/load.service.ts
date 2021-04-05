@@ -7,13 +7,34 @@ import { Pizza } from './models/pizza';
   providedIn: 'root',
 })
 export class LoadService {
+  costumers!: Costumer[];
+  pizza!: Pizza[];
+
   constructor(private http: HttpClient) {}
 
-  loadCostumers() {
-    return this.http.get<Costumer[]>('assets/costumers.json').toPromise();
+  async loadCostumersIfEmpty() {
+    if (!this.costumers || this.costumers.length === 0) {
+      this.costumers = await this.http
+        .get<Costumer[]>('assets/costumers.json')
+        .toPromise();
+    }
   }
 
-  loadPizza() {
-    return this.http.get<Pizza[]>('assets/pizza.json').toPromise();
+  async loadCostumers() {
+    await this.loadCostumersIfEmpty();
+    return this.costumers;
+  }
+
+  async loadPizzaIfEmpty() {
+    if (!this.pizza || this.pizza.length === 0) {
+      this.pizza = await this.http
+        .get<Pizza[]>('assets/pizza.json')
+        .toPromise();
+    }
+  }
+
+  async loadPizza() {
+    await this.loadPizzaIfEmpty();
+    return this.pizza;
   }
 }

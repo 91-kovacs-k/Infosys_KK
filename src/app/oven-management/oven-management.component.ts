@@ -304,7 +304,6 @@ export class OvenManagementComponent implements OnInit {
 
       retval = multiplier * this.bakingTime * 60;
       retval += timers[selected];
-      alert(retval);
       return retval;
     } else {
       for (let i = 0; i < this.ovens.length; i++) {

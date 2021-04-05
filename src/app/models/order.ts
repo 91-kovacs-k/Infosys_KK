@@ -98,9 +98,7 @@ export class Order {
       let minutesInString;
       let secondsInString;
       let minutes = Math.floor(waitTime / 60);
-      alert('perc: ' + minutes);
       let seconds = waitTime - minutes * 60;
-      alert('mperc: ' + seconds);
       // minutes += 20;  // a szállítás idejét hozzáadom
 
       if (minutes < 10) {
