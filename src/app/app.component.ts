@@ -33,7 +33,15 @@ export class AppComponent implements OnInit {
       [Validators.required, Validators.min(1), Validators.max(40)],
     ],
   });
-
+  /*
+  newCostumer = this.fb.group({
+    //id: [this.costumers[this.costumers.length].id + 1],
+    name: ['', Validators.required],
+    address1: ['', Validators.required],
+    address2: ['', Validators.required],
+    telephone: ['', Validators.required],
+  });
+*/
   kitchen = new OvenManagementComponent();
 
   constructor(private loadService: LoadService, private fb: FormBuilder) {}
@@ -42,7 +50,12 @@ export class AppComponent implements OnInit {
     this.costumers = await this.loadService.loadCostumers();
     this.pizza = await this.loadService.loadPizza();
   }
-
+  /*
+  public addCostumer() {
+    const costumer = this.newCostumer.value;
+    this.loadService.addCostumer(costumer);
+  }
+*/
   public resetSelection() {
     this.selectedPizza = [];
     this.pizza.forEach((pizza) => (pizza.selected = 0));

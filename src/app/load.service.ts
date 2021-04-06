@@ -37,4 +37,14 @@ export class LoadService {
     await this.loadPizzaIfEmpty();
     return this.pizza;
   }
+
+  async addCostumer(costumer: Costumer) {
+    await this.loadCostumersIfEmpty();
+    this.costumers.push(costumer);
+  }
+
+  async addPizza(pizza: Pizza) {
+    await this.loadPizzaIfEmpty();
+    this.pizza.push(pizza);
+  }
 }

@@ -1,0 +1,39 @@
+<div class="row justify-content-center text-center mt-5">
+    <div class="md-col-6">
+        <button class="btn btn-lg btn-outline-primary" (click)="open(mymodal)">Pizza hozzáadása <i
+                class="bi bi-plus-circle"></i></button>
+    </div>
+</div>
+
+
+<ng-template #mymodal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Új Pizza</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">×</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="newPizza">
+            <label for="id">Add meg az ID-t:</label>
+            <input type="number" class="form-control" id="id" formControlName="id" required>
+            <label for="name">Add meg a pizza nevét:</label>
+            <input type="text" class="form-control" id="name" formControlName="name" required>
+            <label for="description">Add meg a pizza összetevőt:</label>
+            <input type="text" class="form-control" id="description" formControlName="description" required>
+            <label for="size">Add meg a pizza méretét:</label>
+            <input type="number" class="form-control" id="size" formControlName="size" required>
+            <label for="preparationTime">Add meg a sütési időt:</label>
+            <input type="number" class="form-control" id="preparationTime" formControlName="preparationTime" required>
+            <label for="price">Add meg a pizza árát:</label>
+            <input type="number" class="form-control" id="price" formControlName="price" required>
+            <!--
+            <button type="submit" class="btn btn-primary mt-2" [disabled]="!newPizza.valid" (click)="addPizza()">Új
+                Pizza hozzáadása</button>
+                -->
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Felvisz</button>
+    </div>
+</ng-template>

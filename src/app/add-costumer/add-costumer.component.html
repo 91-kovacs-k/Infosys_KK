@@ -1,0 +1,37 @@
+<div class="row justify-content-center text-center mt-5">
+    <div class="md-col-6">
+        <button class="btn btn-lg btn-outline-primary" (click)="open(mymodal)">Vevő hozzáadása <i
+                class="bi bi-plus-circle"></i></button>
+    </div>
+</div>
+
+
+<ng-template #mymodal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Új Vevő</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">×</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="newCostumer">
+            <label for="id">Add meg az ID-t:</label>
+            <input type="number" class="form-control" id="id" formControlName="id" required>
+            <label for="name">Add meg a vevő nevét:</label>
+            <input type="text" class="form-control" id="name" formControlName="name" required>
+            <label for="address1">Add meg az irányítószámot és a várost</label>
+            <input type="text" class="form-control" id="address1" formControlName="address1" required>
+            <label for="address2">Add meg az utcát és a házszámot:</label>
+            <input type="number" class="form-control" id="address2" formControlName="address2" required>
+            <label for="telephone">Add meg a telefonszámot:</label>
+            <input type="number" class="form-control" id="telephone" formControlName="telephone" required>
+            <!--
+            <button type="submit" class="btn btn-primary mt-2" [disabled]="!newPizza.valid" (click)="addPizza()">Új
+                Pizza hozzáadása</button>
+                -->
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Felvisz</button>
+    </div>
+</ng-template>

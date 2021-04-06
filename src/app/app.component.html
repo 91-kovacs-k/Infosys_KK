@@ -29,8 +29,46 @@
 </div>
 <div class="contanier" *ngIf="kitchen.inicialized == true">
     <h3 class="text-center">Válassz vevőt!</h3>
+    <div class="row">
+        <div class="col-md-12">
+            <app-add-costumer></app-add-costumer>
+        </div>
+    </div>
     <div class="container">
-        <div class="row mt-4 justify-content-center">
+        <div class="row mt-4">
+            <div class="col-md-12">
+
+
+
+
+
+
+
+
+
+
+                <!--    
+                        <form [formGroup]="newCostumer">
+                            <label for="id"></label>
+                            <input type="text" class="form-control" id="id" formControlName="id" required>
+                            <label for="title"></label>
+                            <input type="text" class="form-control" id="title" formControlName="title" required>
+                            <label for="description"></label>
+                            <input type="text" class="form-control" id="description" formControlName="description"
+                                required>
+                            <label for="price"></label>
+                            <input type="number" class="form-control" id="price" formControlName="price" required>
+                            <label for="image"></label>
+                            <input type="text" class="form-control" id="imgUrl" formControlName="imgUrl" required>
+                            <label for="brand"></label>
+                            <input type="text" class="form-control" id="brand" formControlName="brand" required>
+                            <button type="submit" class="btn btn-primary mt-2" [disabled]="!newCostumer.valid"
+                                (click)="addCostumer()">Új vevő hozzáadása</button>
+                        </form>
+                        -->
+            </div>
+        </div>
+        <div class="row mt-1 justify-content-center">
             <div class="m-1" *ngFor="let costumer of costumers">
 
                 <div class="card card-costumer text-dark bg-light text-center ">
@@ -51,29 +89,35 @@
             </div>
         </div>
         <h3 class="text-center mt-3">Válassz pizzát!</h3>
-        <div class="row justify-content-center">
+        <div class="row">
+            <div class="col-md-12">
+                <app-add-pizza></app-add-pizza>
+            </div>
+        </div>
 
-            <div class="row mt-4 justify-content-center">
-                <div class="m-1 text-center" *ngFor="let pizza of pizza">
+        <div class="row mt-4 justify-content-center">
+            <div class="m-1 text-center" *ngFor="let pizza of pizza">
 
-                    <div class="card text-dark bg-light">
-                        <div class="card-header">{{pizza.name}}</div>
-                        <div class="card-body">
-                            <h3 class="card-title"><span class="badge badge-success">{{pizza.price}} Ft</span></h3>
-                            <p class="card-text">{{pizza.description}}<br />Rendelt mennyiség: {{pizza.selected}}</p>
-                        </div>
-                        <div class="card-footer text-center">
-                            <button class="btn btn-outline-primary custom" *ngIf=" !selectedPizza.includes(pizza); else
-                                        buttonSelected2" (click)="selectPizza(pizza)">+</button>
-                            <ng-template #buttonSelected2><button class="btn
-                                        btn-primary custom" (click)="selectPizza(pizza)">+</button>
-                            </ng-template><button class="btn btn-outline-danger custom ml-1"
-                                (click)="deselectPizza(pizza)">-</button>
-                        </div>
+                <div class="card text-dark bg-light">
+                    <div class="card-header">{{pizza.name}}</div>
+                    <div class="card-body">
+                        <h3 class="card-title"><span class="badge badge-success">{{pizza.price}} Ft</span></h3>
+                        <p class="card-text">{{pizza.description}}<br />Rendelt mennyiség: {{pizza.selected}}
+                        </p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <button class="btn btn-outline-primary custom" *ngIf=" !selectedPizza.includes(pizza); else
+                                                buttonSelected2" (click)="selectPizza(pizza)">+</button>
+                        <ng-template #buttonSelected2><button class="btn
+                                                btn-primary custom" (click)="selectPizza(pizza)">+</button>
+                        </ng-template><button class="btn btn-outline-danger custom ml-1"
+                            (click)="deselectPizza(pizza)">-</button>
                     </div>
                 </div>
             </div>
+
         </div>
+
 
         <div class="row justify-content-center mt-3">
             <div class="col-md-2 text-center">
@@ -125,19 +169,35 @@
 <div class="container" *ngIf="kitchen.inicialized == true">
 
     <h3 class="text-center mt-3">Felvett rendelések</h3>
-    <div class="row justify-content-center">
 
-        <div class="row mt-4 justify-content-center">
-            <div class="m-1" *ngFor="let order of orders">
+    <div class="accordion" id="accordionExample" *ngfor="let order of orders">
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                    aria-expanded="true" aria-controls="collapseOne">
+                    Rendelés #{{order.getID()}}
+                </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                data-bs-parent="#accordionExample">
+                <div class="accordion-body">
+                    <strong>{{order.getCostumer().name}}</strong>{{order.getOrderLog()}}<br />{{order.getWaitLog()}}<br />
+                    <button class="btn btn-outline-primary custom" (click)="calculateWaitTime(order)">Frissítés</button>
+                </div>
+            </div>
+        </div>
+        <!--
+    <div class="row mt-4 justify-content-center">
+        <div class="m-1" *ngFor="let order of orders">
 
-                <div class="card card-order text-dark bg-light">
-                    <div class="card-header">#{{order.getID()}}</div>
-                    <div class="card-body">
-                        <h3 class="card-title">{{order.getCostumer().name}}</h3>
-                        <p class="card-text">{{order.getOrderLog()}}<br />{{order.getWaitLog()}}</p>
-                    </div>
-                    <div class="card-footer text-center">
-                        <!--
+            <div class="card card-order text-dark bg-light">
+                <div class="card-header">#{{order.getID()}}</div>
+                <div class="card-body">
+                    <h3 class="card-title">{{order.getCostumer().name}}</h3>
+                    <p class="card-text">{{order.getOrderLog()}}<br />{{order.getWaitLog()}}</p>
+                </div>
+                <div class="card-footer text-center">
+                    <!--
                         <button class="btn btn-outline-primary custom" *ngIf=" !selectedPizza.includes(pizza); else
                                     buttonSelected2" (click)="selectPizza(pizza)">+</button>
                         <ng-template #buttonSelected2><button class="btn
@@ -145,14 +205,16 @@
                         </ng-template><button class="btn btn-outline-danger custom ml-1"
                             (click)="deselectPizza(pizza)">-</button>
 -->
-                        <button class="btn btn-outline-primary custom"
-                            (click)="calculateWaitTime(order)">Frissítés</button>
+        <!--
+                    <button class="btn btn-outline-primary custom" (click)="calculateWaitTime(order)">Frissítés</button>
 
-                    </div>
                 </div>
             </div>
         </div>
     </div>
+-->
+    </div>
+</div>
 
 
 
@@ -166,7 +228,8 @@
 
 
 
-    <!--
+
+<!--
 
     <div class="row mt-5">
         <div class="col-md-3 text-primary">
