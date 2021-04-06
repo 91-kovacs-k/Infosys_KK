@@ -29,10 +29,8 @@
 </div>
 <div class="contanier" *ngIf="kitchen.inicialized == true">
     <h3 class="text-center">Válassz vevőt!</h3>
-    <div class="row">
-        <div class="col-md-12">
-            <app-add-costumer></app-add-costumer>
-        </div>
+    <div class="container">
+        <app-add-costumer></app-add-costumer>
     </div>
     <div class="container">
         <div class="row mt-4">
@@ -169,7 +167,21 @@
 <div class="container" *ngIf="kitchen.inicialized == true">
 
     <h3 class="text-center mt-3">Felvett rendelések</h3>
+    <ngb-accordion [closeOthers]="true" activeIds="acc-1" *ngfor="let order of orders">
+        <ngb-panel id="acc-1" title="#{{order.getID()}}">
+            <ng-template ngbPanelContent>
+                Vevő: <strong>első vevő,</strong><br />
+                rendelt ezt azt ide oda<br />várnia kell ennyit<br />
+                <button class="btn btn-outline-primary custom">Frissítés</button>
+            </ng-template>
+        </ngb-panel>
+    </ngb-accordion>
 
+</div>
+
+
+
+<!--
     <div class="accordion" id="accordionExample" *ngfor="let order of orders">
         <div class="accordion-item">
             <h2 class="accordion-header" id="headingOne">
@@ -205,7 +217,7 @@
                         </ng-template><button class="btn btn-outline-danger custom ml-1"
                             (click)="deselectPizza(pizza)">-</button>
 -->
-        <!--
+<!--
                     <button class="btn btn-outline-primary custom" (click)="calculateWaitTime(order)">Frissítés</button>
 
                 </div>
@@ -213,8 +225,7 @@
         </div>
     </div>
 -->
-    </div>
-</div>
+
 
 
 
