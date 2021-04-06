@@ -31,3 +31,7 @@ input[type="number"]::-webkit-inner-spin-button {
   width: 20em;
   height: 25em;
 }
+
+.oven {
+  width: 30em;
+}
