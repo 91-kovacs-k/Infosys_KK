@@ -15,18 +15,35 @@
     </div>
     <div class="modal-body">
         <form [formGroup]="newPizza">
-            <label for="id">Add meg az ID-t:</label>
-            <input type="number" class="form-control" id="id" formControlName="id" required>
-            <label for="name">Add meg a pizza nevét:</label>
-            <input type="text" class="form-control" id="name" formControlName="name" required>
-            <label for="description">Add meg a pizza összetevőt:</label>
-            <input type="text" class="form-control" id="description" formControlName="description" required>
-            <label for="size">Add meg a pizza méretét:</label>
-            <input type="number" class="form-control" id="size" formControlName="size" required>
-            <label for="preparationTime">Add meg a sütési időt:</label>
-            <input type="number" class="form-control" id="preparationTime" formControlName="preparationTime" required>
-            <label for="price">Add meg a pizza árát:</label>
-            <input type="number" class="form-control" id="price" formControlName="price" required>
+
+            <input type="text" class="form-control mt-2" id="name" placeholder="Pizza neve" formControlName="name"
+                required>
+
+            <input type="text" class="form-control mt-2" id="description" placeholder="Összetevők"
+                formControlName="description" required>
+
+            <div class="row mt-2 text-center">
+                <div class="col-md-4">
+                    <label for="size">Méret</label>
+                    <select class="form-control" id="size" formControlName="size" required>
+                        <option value="32">32</option>
+                        <option value="48">48</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="size">Elkészítési idő</label>
+                    <select class="form-control" id="preparationTime" formControlName="preparationTime" required>
+                        <option value="20">20</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="size">Ár</label>
+                    <input type="number" class="form-control" id="price" placeholder="Pizza ára" formControlName="price"
+                        required>
+                </div>
+            </div>
+
+
             <!--
             <button type="submit" class="btn btn-primary mt-2" [disabled]="!newPizza.valid" (click)="addPizza()">Új
                 Pizza hozzáadása</button>
@@ -34,6 +51,7 @@
         </form>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Felvisz</button>
+        <button type="button" class="btn btn-outline-dark" [disabled]="!newPizza.valid"
+            (click)="modal.close('Save click')">Felvisz</button>
     </div>
 </ng-template>

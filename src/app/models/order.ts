@@ -8,7 +8,9 @@ export class Order {
   private remainingQuantity: number; // hátralévő mennyiség
   private costumer: Costumer; // vevő
   private selectedPizza!: Pizza[]; // a rendelt pizzák
-  private orderLog: string = ''; // rendeléshez tartozó információk
+  private destinationLog: string = ''; // a cím információk
+  private pizzaLog: string = ''; // a rendelt pizzák
+  private priceLog: string = ''; // az ár
   private waitLog: string = ''; // az elkészülés idejéhez tartozó információk
 
   // konstruktorban darabszámot vár, amivel beállítja, hogy mennyi mennyi pizzát rendeltek
@@ -50,9 +52,8 @@ export class Order {
   }
 
   private orderLogger() {
-    this.orderLog =
-      this.orderLog +
-      'Szállítási cím: ' +
+    this.destinationLog =
+      this.destinationLog +
       this.getCostumer().address1 +
       '\n' +
       this.getCostumer().address2;
@@ -60,11 +61,10 @@ export class Order {
   }
 
   private listSelectedPizza(selectedPizza: Pizza[]) {
-    this.orderLog += '\nRendelt Pizzák: ';
     let sum = 0;
     selectedPizza.sort((a, b) => 0 - (a.name > b.name ? -1 : 1));
     let tmp = 1;
-    this.orderLog += '\n' + ' - ' + selectedPizza[0].name;
+    this.pizzaLog += ' - ' + selectedPizza[0].name;
     sum += selectedPizza[0].price;
     for (let i = 1; i < selectedPizza.length; i++) {
       if (selectedPizza[i].name === selectedPizza[i - 1].name) {
@@ -72,23 +72,31 @@ export class Order {
         sum += selectedPizza[i].price;
       } else {
         if (tmp > 1) {
-          this.orderLog += ' * ' + tmp;
+          this.pizzaLog += ' * ' + tmp;
           tmp = 1;
         }
-        this.orderLog += ',\n - ' + selectedPizza[i].name;
+        this.pizzaLog += ',\n - ' + selectedPizza[i].name;
         sum += selectedPizza[i].price;
       }
     }
     if (tmp == 1) {
-      this.orderLog += '.';
+      this.pizzaLog += '.';
     } else {
-      this.orderLog += ' * ' + tmp + '.';
+      this.pizzaLog += ' * ' + tmp + '.';
     }
-    this.orderLog += '\n' + 'Ár: ' + sum + '.\n';
+    this.priceLog += sum;
   }
 
-  public getOrderLog() {
-    return this.orderLog;
+  public getDestinationLog() {
+    return this.destinationLog;
+  }
+
+  public getPizzaLog() {
+    return this.pizzaLog;
+  }
+
+  public getPriceLog() {
+    return this.priceLog;
   }
 
   public waitLogger(order: Order, waitTime: number) {

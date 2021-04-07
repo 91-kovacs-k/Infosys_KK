@@ -1,30 +1,42 @@
 [
     {
-        "id": "1",
+        "id": 1,
         "name": "Kiss Jóska",
-        "address1": "3600 Ózd,",
-        "address2": "Vasvár út 7.",
-        "telephone": "+36301234567"
+        "zip": 3600,
+        "city": "Ózd",
+        "address1": "Vasvár",
+        "address2": 7,
+        "telephonePrefix": 30,
+        "telephone": "1234567"
     },
     {
-        "id": "2",
+        "id": 2,
         "name": "Németh Edina",
-        "address1": "3600 Ózd,",
-        "address2": "Nemzetőr út 11.",
-        "telephone": "+36205553670"
+        "zip": 3600,
+        "city": "Ózd",
+        "address1": "Nemzetőr",
+        "address2": 11,
+        "telephonePrefix": 30,
+        "telephone": "5553670"
     },
     {
-        "id": "3",
+        "id": 3,
         "name": "Nagy Ferenc",
-        "address1": "3500 Miskolc,",
-        "address2": "Ady Endre út 18.",
-        "telephone": "+36205145236"
+        "zip": 3500,
+        "city": "Miskolc",
+        "address1": "Ady Endre",
+        "address2": 18,
+        "telephonePrefix": 20,
+        "telephone": "5145236"
     },
     {
-        "id": "4",
+        "id": 4,
         "name": "Szabó Franciska",
-        "address1": "3300 Eger,",
-        "address2": "Petőfi Sándor út 202.",
-        "telephone": "+36707654321"
+        "zip": 3300,
+        "city": "Eger",
+        "address1": "Petőfi Sándor",
+        "address2": 202,
+        "telephonePrefix": 70,
+        "telephone": "7654321"
     }
 ]

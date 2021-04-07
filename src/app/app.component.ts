@@ -17,8 +17,6 @@ export class AppComponent implements OnInit {
   title = 'AngularBeadando';
 
   public queue = new Queue<Order>(180); //180 a maximum várakozó pizza, mert 12 órát van nyitva a pizzéria egy nap, 5 sütő van és egy pizza 20 percig sül: 12*60/20*5=180
-  private orderLog: string = '';
-  private waitLog: string = '';
   public costumers!: Costumer[];
   public pizza!: Pizza[];
   public selectedCostumer!: Costumer;
@@ -50,12 +48,7 @@ export class AppComponent implements OnInit {
     this.costumers = await this.loadService.loadCostumers();
     this.pizza = await this.loadService.loadPizza();
   }
-  /*
-  public addCostumer() {
-    const costumer = this.newCostumer.value;
-    this.loadService.addCostumer(costumer);
-  }
-*/
+
   public resetSelection() {
     this.selectedPizza = [];
     this.pizza.forEach((pizza) => (pizza.selected = 0));
@@ -63,8 +56,11 @@ export class AppComponent implements OnInit {
     this.selectedCostumer = {
       id: 0,
       name: 'null',
+      zip: 0,
+      city: 'null',
       address1: 'null',
-      address2: 'null',
+      address2: 0,
+      telephonePrefix: 0,
       telephone: 'null',
     };
   }
@@ -73,7 +69,7 @@ export class AppComponent implements OnInit {
     this.resetSelection();
     let order = new Order(costumer, selectedPizza);
     let waitTime;
-    this.orders.push(order);
+    this.orders.unshift(order);
     //this.orderLogger(order);
     if (this.queue.isEmpty()) {
       this.queue.enqueue(order);

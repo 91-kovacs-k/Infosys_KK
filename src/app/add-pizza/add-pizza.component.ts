@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { LoadService } from '../load.service';
+import { Pizza } from '../models/pizza';
 
 @Component({
   selector: 'app-add-pizza',
@@ -10,6 +11,7 @@ import { LoadService } from '../load.service';
 })
 export class AddPizzaComponent implements OnInit {
   closeResult = '';
+  pizza!: Pizza[];
 
   constructor(
     private modalService: NgbModal,
@@ -18,7 +20,6 @@ export class AddPizzaComponent implements OnInit {
   ) {}
 
   newPizza = this.fb.group({
-    id: ['', Validators.required],
     name: ['', Validators.required],
     description: ['', Validators.required],
     size: [32, [Validators.min(32), Validators.max(48)]],
@@ -26,9 +27,13 @@ export class AddPizzaComponent implements OnInit {
     price: [1000, [Validators.min(1000), Validators.max(5000)]],
   });
 
-  addPizza() {
+  async addPizza() {
     const pizza = this.newPizza.value;
-    this.loadservice.addPizza(pizza);
+    pizza.id = this.pizza[this.pizza.length - 1].id + 1;
+    pizza.selected = 0;
+    await this.loadservice.addPizza(pizza);
+
+    this.newPizza.reset();
   }
 
   open(content: any) {
@@ -55,5 +60,7 @@ export class AddPizzaComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void {}
+  async ngOnInit() {
+    this.pizza = await this.loadservice.loadPizza();
+  }
 }

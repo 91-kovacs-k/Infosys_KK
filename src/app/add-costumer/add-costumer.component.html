@@ -15,16 +15,46 @@
     </div>
     <div class="modal-body">
         <form [formGroup]="newCostumer">
-            <label for="id">Add meg az ID-t:</label>
-            <input type="number" class="form-control" id="id" formControlName="id" required>
-            <label for="name">Add meg a vevő nevét:</label>
-            <input type="text" class="form-control" id="name" formControlName="name" required>
-            <label for="address1">Add meg az irányítószámot és a várost</label>
-            <input type="text" class="form-control" id="address1" formControlName="address1" required>
-            <label for="address2">Add meg az utcát és a házszámot:</label>
-            <input type="number" class="form-control" id="address2" formControlName="address2" required>
-            <label for="telephone">Add meg a telefonszámot:</label>
-            <input type="number" class="form-control" id="telephone" formControlName="telephone" required>
+            <input type="text" class="form-control mt-2" id="name" placeholder="Vevő neve" formControlName="name"
+                required>
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="number" class="form-control mt-2" id="zip" placeholder="Irányítószám"
+                        formControlName="zip" required>
+                </div>
+                <div class="col-md-8">
+                    <input type="text" class="form-control mt-2" id="city" placeholder="Város" formControlName="city"
+                        required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-9">
+
+                    <input type="text" class="form-control mt-2" id="address1" placeholder="Utca"
+                        formControlName="address1" required>
+                </div>
+                <div class="col-md-3">
+
+                    <input type="number" class="form-control mt-2" id="address2" placeholder="Házszám"
+                        formControlName="address2" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <select class="form-control mt-2" id="telephonePrefix" formControlName="telephonePrefix" required>
+                        <option value="20">20</option>
+                        <option value="30">30</option>
+                        <option value="70">70</option>
+                    </select>
+                </div>
+                <div class="col-md-9">
+
+                    <input type="text" class="form-control mt-2" id="telephone" placeholder="1234567"
+                        formControlName="telephone">
+                </div>
+            </div>
+
             <!--
             <button type="submit" class="btn btn-primary mt-2" [disabled]="!newPizza.valid" (click)="addPizza()">Új
                 Pizza hozzáadása</button>
@@ -32,6 +62,7 @@
         </form>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-outline-dark" (click)="modal.close('Save click')">Felvisz</button>
+        <button type="button" class="btn btn-outline-dark" [disabled]="!newCostumer.valid"
+            (click)="modal.close('Save click')">Felvisz</button>
     </div>
 </ng-template>

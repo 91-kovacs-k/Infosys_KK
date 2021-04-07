@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { LoadService } from '../load.service';
+import { Costumer } from '../models/costumer';
 
 @Component({
   selector: 'app-add-costumer',
@@ -10,6 +11,8 @@ import { LoadService } from '../load.service';
 })
 export class AddCostumerComponent implements OnInit {
   closeResult = '';
+  costumers!: Costumer[];
+  prefix!: number;
 
   constructor(
     private modalService: NgbModal,
@@ -18,16 +21,29 @@ export class AddCostumerComponent implements OnInit {
   ) {}
 
   newCostumer = this.fb.group({
-    id: ['', Validators.required],
     name: ['', Validators.required],
+    zip: [, [Validators.required, Validators.min(1000), Validators.max(9985)]],
+    city: [, Validators.required],
     address1: ['', Validators.required],
-    address2: ['', [Validators.required]],
-    telephone: ['', [Validators.required]],
+    address2: [, [Validators.required]],
+    telephonePrefix: [, Validators.required],
+    telephone: [
+      ,
+      [
+        Validators.required,
+        Validators.pattern('^[0-9]*$'),
+        Validators.minLength(7),
+        Validators.maxLength(7),
+      ],
+    ],
   });
 
-  addCostumer() {
+  async addCostumer() {
     const costumer = this.newCostumer.value;
-    this.loadservice.addCostumer(costumer);
+    costumer.id = this.costumers[this.costumers.length - 1].id + 1;
+    await this.loadservice.addCostumer(costumer);
+
+    this.newCostumer.reset();
   }
 
   open(content: any) {
@@ -54,5 +70,7 @@ export class AddCostumerComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void {}
+  async ngOnInit() {
+    this.costumers = await this.loadservice.loadCostumers();
+  }
 }

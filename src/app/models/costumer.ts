@@ -1,7 +1,10 @@
 export interface Costumer {
   id: number; // vevő azonosító
   name: string; // név
-  address1: string; // rendelési cím: város
-  address2: string; // rendelési cím: utca házszám
+  zip: number; // irányítószám
+  city: string; // város
+  address1: string; // utca
+  address2: number; // házszám
+  telephonePrefix: number; // szolgáltató
   telephone: string; // telefonszám
 }

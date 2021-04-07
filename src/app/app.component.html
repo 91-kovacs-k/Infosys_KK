@@ -30,7 +30,12 @@
 <div class="contanier" *ngIf="kitchen.inicialized == true">
     <h3 class="text-center">Válassz vevőt!</h3>
     <div class="container">
-        <app-add-costumer></app-add-costumer>
+        <div class="row">
+            <div class="col-md-12">
+
+                <app-add-costumer></app-add-costumer>
+            </div>
+        </div>
     </div>
     <div class="container">
         <div class="row mt-4">
@@ -72,8 +77,9 @@
                 <div class="card card-costumer text-dark bg-light text-center ">
                     <div class="card-header">{{costumer.name}}</div>
                     <div class="card-body">
-                        <h5 class="card-title">{{costumer.telephone}}</h5>
-                        <p class="card-text">{{costumer.address1}}<br />{{costumer.address2}}</p>
+                        <h5 class="card-title">+36{{costumer.telephonePrefix}} {{costumer.telephone}}</h5>
+                        <p class="card-text">{{costumer.zip}} {{costumer.city}},<br />{{costumer.address1}} út
+                            {{costumer.address2}}.</p>
                     </div>
                     <div class="card-footer text-center">
                         <button class="btn btn-outline-primary col-md-12"
@@ -100,7 +106,7 @@
                     <div class="card-header">{{pizza.name}}</div>
                     <div class="card-body">
                         <h3 class="card-title"><span class="badge badge-success">{{pizza.price}} Ft</span></h3>
-                        <p class="card-text">{{pizza.description}}<br />Rendelt mennyiség: {{pizza.selected}}
+                        <p class="card-text">{{pizza.description}}<br />Kiválasztott mennyiség: {{pizza.selected}}
                         </p>
                     </div>
                     <div class="card-footer text-center">
@@ -165,17 +171,30 @@
 </div>
 
 <div class="container" *ngIf="kitchen.inicialized == true">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h3 class="text-center mt-3">Felvett rendelések</h3>
+            <ngb-accordion [closeOthers]="true" *ngFor="let order of orders">
+                <ngb-panel id="acc-1" title="#{{order.getID()}} rendelés">
+                    <ng-template ngbPanelContent>
+                        Vevő: <strong>{{order.getCostumer().name}}</strong>,<br />
+                        Szállítási cím: <strong>{{order.getDestinationLog()}}</strong>,<br />
+                        Rendelt pizzák:<br />
+                        <strong style="white-space: pre;">{{order.getPizzaLog()}}</strong><br />
+                        Fizetendő: <strong>{{order.getPriceLog()}}.-</strong> Ft
+                        <br />{{order.getWaitLog()}}<br />
+                        <div style="text-align:center;" class="container mt-2">
+                            <button class="btn btn-outline-primary orderRefresh"
+                                (click)="calculateWaitTime(order)">Frissítés</button>
+                        </div>
 
-    <h3 class="text-center mt-3">Felvett rendelések</h3>
-    <ngb-accordion [closeOthers]="true" activeIds="acc-1" *ngfor="let order of orders">
-        <ngb-panel id="acc-1" title="#{{order.getID()}}">
-            <ng-template ngbPanelContent>
-                Vevő: <strong>első vevő,</strong><br />
-                rendelt ezt azt ide oda<br />várnia kell ennyit<br />
-                <button class="btn btn-outline-primary custom">Frissítés</button>
-            </ng-template>
-        </ngb-panel>
-    </ngb-accordion>
+
+                    </ng-template>
+                </ngb-panel>
+            </ngb-accordion>
+        </div>
+    </div>
+
 
 </div>
 
