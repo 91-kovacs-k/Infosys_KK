@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Queue } from './models/queue';
 import { Order } from './models/order';
 import { LoadService } from './load.service';
@@ -6,7 +6,6 @@ import { OvenManagementComponent } from './oven-management/oven-management.compo
 import { Costumer } from './models/costumer';
 import { Pizza } from './models/pizza';
 import { FormBuilder, Validators } from '@angular/forms';
-import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -23,6 +22,8 @@ export class AppComponent implements OnInit {
   public selectedPizza: Pizza[] = [];
   public costumerIsSelected: boolean = false;
   public orders: Order[] = [];
+  public costumerKeyword!: string;
+  public pizzaKeyword!: string;
 
   ovenInicialization = this.fb.group({
     ovens: ['', [Validators.required, Validators.min(1), Validators.max(10)]],
@@ -82,11 +83,43 @@ export class AppComponent implements OnInit {
     }
 
     order.waitLogger(order, waitTime);
+    this.calculateWaitTime(order);
   }
 
-  public calculateWaitTime(order: Order) {
+  public cancelOrder(order: Order) {
+    if (order.getStatus() == 'waiting') {
+      let number = -1;
+      for (let i = 0; i < this.queue.getLength(); i++) {
+        if (this.queue.getObjectByNumber(i).getID() == order.getID()) {
+          number = i;
+          break;
+        }
+      }
+      if (number > -1) {
+        alert(
+          'A ' +
+            this.queue.removeObjectByNumber(number).getID() +
+            ' számú rendelés törölve!'
+        );
+        order.setStatus('deleted');
+      }
+    } else {
+      alert('A rendelés már nem törölhető!');
+    }
+  }
+
+  public async calculateWaitTime(order: Order) {
     let waitTime = this.kitchen.calculateWait(order, this.queue);
     order.waitLogger(order, waitTime);
+    while (waitTime != 0) {
+      waitTime = this.kitchen.calculateWait(order, this.queue);
+      order.waitLogger(order, waitTime);
+      await this.wait(1);
+    }
+  }
+
+  private wait(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms * 1000));
   }
 
   public selectCostumer(costumer: Costumer) {
@@ -102,6 +135,16 @@ export class AppComponent implements OnInit {
         break;
       }
     }
+  }
+
+  async searchCostumer() {
+    this.costumers = await this.loadService.filterCostumers(
+      this.costumerKeyword
+    );
+  }
+
+  async searchPizza() {
+    this.pizza = await this.loadService.filterPizza(this.pizzaKeyword);
   }
 
   public deselectPizza(pizza: Pizza) {

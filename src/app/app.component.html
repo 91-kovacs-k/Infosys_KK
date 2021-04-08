@@ -9,11 +9,13 @@
             <div *ngIf="kitchen.inicialized == false">
                 <form [formGroup]="ovenInicialization">
                     <input type="number" class="form-control text-center" id="ovens" formControlName="ovens"
-                        placeholder="Add meg a sütők számát" required>
+                        placeholder="Add meg a sütők számát" required [disabled]="!ovenInicialization.valid"
+                        (keyup.enter)="kitchen.ovenInicialization(ovenInicialization)">
                     <label class="text-danger" *ngIf="!ovenInicialization.valid">1 és 10 közötti számot adj
                         meg!</label>
                     <input type="number" class="form-control text-center mt-2" id="bakeTime" formControlName="bakeTime"
-                        placeholder="Add meg a sütés idejét" required>
+                        placeholder="Add meg a sütés idejét" required
+                        (keyup.enter)="kitchen.ovenInicialization(ovenInicialization)">
                     <label class="text-danger" *ngIf="!ovenInicialization.valid">1 és 40 közötti számot adj
                         meg!</label><br>
                     <!--
@@ -31,9 +33,18 @@
     <h3 class="text-center">Válassz vevőt!</h3>
     <div class="container">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-2"></div>
+            <div class="col-md-3">
 
                 <app-add-costumer></app-add-costumer>
+
+            </div>
+            <div class="col-md-4 mt-5">
+                <input type="text" placeholder="Kereséshez add meg a vevő nevét" class="form-control"
+                    [(ngModel)]="costumerKeyword" (keyup.enter)="searchCostumer()">
+            </div>
+            <div class="col-md-3 mt-5">
+                <button class="btn btn-primary text-white " (click)="searchCostumer()">Keresés</button>
             </div>
         </div>
     </div>
@@ -94,8 +105,16 @@
         </div>
         <h3 class="text-center mt-3">Válassz pizzát!</h3>
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-2"></div>
+            <div class="col-md-3">
                 <app-add-pizza></app-add-pizza>
+            </div>
+            <div class="col-md-4 mt-5">
+                <input type="text" placeholder="Kereséshez add meg a pizza nevét" class="form-control"
+                    [(ngModel)]="pizzaKeyword" (keyup.enter)="searchPizza()">
+            </div>
+            <div class="col-md-3 mt-5">
+                <button class="btn btn-primary text-white " (click)="searchPizza()">Keresés</button>
             </div>
         </div>
 
@@ -182,10 +201,30 @@
                         Rendelt pizzák:<br />
                         <strong style="white-space: pre;">{{order.getPizzaLog()}}</strong><br />
                         Fizetendő: <strong>{{order.getPriceLog()}}.-</strong> Ft
-                        <br />{{order.getWaitLog()}}<br />
+                        <br />
+                        <ng-container *ngIf="order.getStatus() == 'baking';else second">
+                            <p class="text-warning">{{order.getWaitLog()}}</p>
+                        </ng-container>
+                        <ng-template #second>
+                            <ng-container *ngIf="order.getStatus() == 'done';else third">
+                                <p class="text-success">{{order.getWaitLog()}}</p>
+                            </ng-container>
+                        </ng-template>
+                        <ng-template #third>
+                            <ng-container *ngIf="order.getStatus() == 'waiting';else fourth">
+                                <p>{{order.getWaitLog()}}</p>
+                            </ng-container>
+                        </ng-template>
+                        <ng-template #fourth>
+                            <ng-container>
+                                <p class="text-danger">{{order.getWaitLog()}}</p>
+                            </ng-container>
+                        </ng-template>
+                        <br />
                         <div style="text-align:center;" class="container mt-2">
-                            <button class="btn btn-outline-primary orderRefresh"
-                                (click)="calculateWaitTime(order)">Frissítés</button>
+                            <button class="btn btn-outline-danger orderRefresh"
+                                [disabled]="order.getStatus() != 'waiting'" (click)="cancelOrder(order)">Rendelés
+                                lemondása</button>
                         </div>
 
 

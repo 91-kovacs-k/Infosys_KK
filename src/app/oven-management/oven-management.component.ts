@@ -66,20 +66,10 @@ export class OvenManagementComponent implements OnInit {
           for (let i = 0; i < this.ovens.length; i++) {
             if (this.ovens[i].getAvailability()) {
               if (queue.peek().getRemainingQuantity() == 1) {
-                this.bakePizza(
-                  this.ovens[i],
-                  queue.peek().getID(),
-                  queue.peek().getRemainingQuantity(),
-                  queue.peek().getQuantity()
-                );
+                this.bakePizza(this.ovens[i], queue.peek(), queue);
                 queue.dequeue();
               } else {
-                this.bakePizza(
-                  this.ovens[i],
-                  queue.peek().getID(),
-                  queue.peek().getRemainingQuantity(),
-                  queue.peek().getQuantity()
-                );
+                this.bakePizza(this.ovens[i], queue.peek(), queue);
                 queue.peek().DecrementRemainingQuantity();
               }
             } else {
@@ -96,14 +86,15 @@ export class OvenManagementComponent implements OnInit {
     }
   }
 
-  private async bakePizza(
-    oven: Oven,
-    ID: number,
-    remaining: number,
-    quantity: number
-  ) {
+  private async bakePizza(oven: Oven, order: Order, queue: Queue<Order>) {
+    let ID = order.getID();
+    let remaining = order.getRemainingQuantity();
+    let quantity = order.getQuantity();
     oven.setAvailability(false);
     oven.setProduct(ID, quantity - remaining + 1);
+    if (order.getStatus() != 'baking') {
+      order.setStatus('baking');
+    }
     for (let i = 0; i < this.bakingTime; i++) {
       for (let j = 0; j < 60; j++) {
         await this.waitingForPizza(1);
@@ -124,6 +115,7 @@ export class OvenManagementComponent implements OnInit {
     oven.setAvailability(true);
 
     if (remaining == 1) {
+      order.setStatus('done');
       OvenManagementComponent.readyLogger(
         'Elkészült a #' +
           ID +

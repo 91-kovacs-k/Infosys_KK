@@ -12,6 +12,7 @@ export class Order {
   private pizzaLog: string = ''; // a rendelt pizzák
   private priceLog: string = ''; // az ár
   private waitLog: string = ''; // az elkészülés idejéhez tartozó információk
+  private status: string = ''; // a rendelés állapota
 
   // konstruktorban darabszámot vár, amivel beállítja, hogy mennyi mennyi pizzát rendeltek
   public constructor(costumer: Costumer, selectedPizza: Pizza[]) {
@@ -21,6 +22,13 @@ export class Order {
     this.costumer = costumer; // vevő beállítása
     this.selectedPizza = selectedPizza;
     this.orderLogger();
+    this.setStatus('waiting');
+  }
+  public getStatus() {
+    return this.status;
+  }
+  public setStatus(s: string) {
+    this.status = s;
   }
   // get ID
   public getID() {
@@ -101,7 +109,11 @@ export class Order {
 
   public waitLogger(order: Order, waitTime: number) {
     if (waitTime == 0) {
-      this.waitLog = 'A rendelés elkészült!';
+      if (this.getStatus() == 'done') {
+        this.waitLog = 'A rendelés elkészült!';
+      } else if (this.getStatus() == 'deleted') {
+        this.waitLog = 'A rendelés törölve!';
+      }
     } else {
       let minutesInString;
       let secondsInString;

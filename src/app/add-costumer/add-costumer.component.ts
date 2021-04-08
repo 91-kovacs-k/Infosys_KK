@@ -13,6 +13,7 @@ export class AddCostumerComponent implements OnInit {
   closeResult = '';
   costumers!: Costumer[];
   prefix!: number;
+  searchCostumer!: string;
 
   constructor(
     private modalService: NgbModal,
@@ -25,7 +26,7 @@ export class AddCostumerComponent implements OnInit {
     zip: [, [Validators.required, Validators.min(1000), Validators.max(9985)]],
     city: [, Validators.required],
     address1: ['', Validators.required],
-    address2: [, [Validators.required]],
+    address2: [, [Validators.required, Validators.min(1), Validators.max(873)]],
     telephonePrefix: [, Validators.required],
     telephone: [
       ,
@@ -37,6 +38,12 @@ export class AddCostumerComponent implements OnInit {
       ],
     ],
   });
+
+  async search() {
+    this.costumers = await this.loadservice.filterCostumers(
+      this.searchCostumer
+    );
+  }
 
   async addCostumer() {
     const costumer = this.newCostumer.value;

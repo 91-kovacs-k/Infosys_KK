@@ -47,4 +47,28 @@ export class LoadService {
     await this.loadPizzaIfEmpty();
     this.pizza.push(pizza);
   }
+
+  async filterCostumers(query: string) {
+    await this.loadCostumersIfEmpty();
+
+    return this.costumers.filter((costumers) => {
+      if (!costumers.name) {
+        return false;
+      } else {
+        return costumers.name.toLowerCase().includes(query.toLowerCase());
+      }
+    });
+  }
+
+  async filterPizza(query: string) {
+    await this.loadPizzaIfEmpty();
+
+    return this.pizza.filter((pizza) => {
+      if (!pizza.name) {
+        return false;
+      } else {
+        return pizza.name.toLowerCase().includes(query.toLowerCase());
+      }
+    });
+  }
 }

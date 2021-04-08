@@ -51,6 +51,24 @@ export class Queue<T> {
       throw new Error('Nincs a sorban ilyen számú elem:' + n);
     }
   }
+
+  public removeObjectByNumber(n: number): T {
+    if (this.isEmpty()) {
+      throw new Error('A sor üres!');
+    }
+    if (n < this.length) {
+      const retval = this.queue[n];
+
+      for (let i = n; i < this.length; i++) {
+        this.queue[i] = this.queue[i + 1]; //elemek előrébb mozgatása
+      }
+
+      this.length--; // hossz csökkentése
+      return retval;
+    } else {
+      throw new Error('Nincs a sorban ilyen számú elem:' + n);
+    }
+  }
   // a következő elemet adja vissza, anélkül, hogy kivenné
   public peek(): T {
     if (this.isEmpty()) {
