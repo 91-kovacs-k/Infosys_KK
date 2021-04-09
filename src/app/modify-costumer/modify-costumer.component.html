@@ -1,0 +1,61 @@
+<button class="btn btn-outline-primary btn-sm float-left" (click)="open(mymodal)"><i class="bi bi-gear"></i></button>
+
+
+
+
+<ng-template #mymodal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">{{oldCostumer.name}} módosítása</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">×</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="costumer">
+
+            <input type="text" class="form-control mt-2" id="name" placeholder="{{oldCostumer.name}}"
+                value="{{oldCostumer.name}}" formControlName="name" required>
+            <div class="row">
+                <div class="col-md-4">
+                    <input type="number" class="form-control mt-2" id="zip" placeholder="{{oldCostumer.zip}}"
+                        value="{{oldCostumer.zip}}" formControlName="zip" required>
+                </div>
+                <div class="col-md-8">
+                    <input type="text" class="form-control mt-2" id="city" placeholder="{{oldCostumer.city}}"
+                        value="{{oldCostumer.city}}" formControlName="city" required>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-9">
+
+                    <input type="text" class="form-control mt-2" id="address1" placeholder="{{oldCostumer.address1}}"
+                        value="{{oldCostumer.address1}}" formControlName="address1" required>
+                </div>
+                <div class="col-md-3">
+
+                    <input type="number" class="form-control mt-2" id="address2" placeholder="{{oldCostumer.address2}}"
+                        value="{{oldCostumer.address2}}" formControlName="address2" required>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <select class="form-control mt-2" id="telephonePrefix" formControlName="telephonePrefix" required>
+                        <option value="20" [selected]="oldCostumer.telephonePrefix === 20">20</option>
+                        <option value="30" [selected]="oldCostumer.telephonePrefix === 30">30</option>
+                        <option value="70" [selected]="oldCostumer.telephonePrefix === 70">70</option>
+                    </select>
+                </div>
+                <div class="col-md-9">
+
+                    <input type="text" class="form-control mt-2" id="telephone" placeholder="{{oldCostumer.telephone}}"
+                        value="{{oldCostumer.telephone}}" formControlName="telephone">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark" [disabled]="!costumer.valid"
+            (click)="modal.close('Save click')">Módosítás</button>
+    </div>
+</ng-template>

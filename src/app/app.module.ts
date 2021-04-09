@@ -8,9 +8,11 @@ import { OvenManagementComponent } from './oven-management/oven-management.compo
 import { AddPizzaComponent } from './add-pizza/add-pizza.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AddCostumerComponent } from './add-costumer/add-costumer.component';
+import { ModifyCostumerComponent } from './modify-costumer/modify-costumer.component';
+import { DeleteCostumerComponent } from './delete-costumer/delete-costumer.component';
 
 @NgModule({
-  declarations: [AppComponent, OvenManagementComponent, AddPizzaComponent, AddCostumerComponent],
+  declarations: [AppComponent, OvenManagementComponent, AddPizzaComponent, AddCostumerComponent, ModifyCostumerComponent, DeleteCostumerComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

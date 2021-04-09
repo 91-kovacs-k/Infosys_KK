@@ -71,4 +71,33 @@ export class LoadService {
       }
     });
   }
+
+  async modifyCostumer(costumer: Costumer) {
+    await this.loadCostumersIfEmpty();
+    for (let i = 0; i < this.costumers.length; i++) {
+      if (this.costumers[i].id == costumer.id) {
+        this.costumers[i].name = costumer.name;
+        this.costumers[i].zip = costumer.zip;
+        this.costumers[i].city = costumer.city;
+        this.costumers[i].address1 = costumer.address1;
+        this.costumers[i].address2 = costumer.address2;
+        this.costumers[i].telephonePrefix = costumer.telephonePrefix;
+        this.costumers[i].telephone = costumer.telephone;
+        break;
+      }
+    }
+  }
+
+  async deleteCostumer(id: number) {
+    await this.loadCostumersIfEmpty();
+    for (let i = 0; i < this.costumers.length; i++) {
+      if (this.costumers[i].id == id) {
+        for (let j = i; j < this.costumers.length; j++) {
+          this.costumers[j] = this.costumers[j + 1]; //elemek előrébb mozgatása
+        }
+        break;
+      }
+    }
+    this.costumers.length--;
+  }
 }

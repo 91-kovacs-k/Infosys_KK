@@ -86,7 +86,10 @@
             <div class="m-1" *ngFor="let costumer of costumers">
 
                 <div class="card card-costumer text-dark bg-light text-center ">
-                    <div class="card-header">{{costumer.name}}</div>
+                    <div class="card-header">
+                        <app-modify-costumer [oldCostumer]="costumer"></app-modify-costumer>{{costumer.name}}
+                        <app-delete-costumer [oldCostumer]="costumer"></app-delete-costumer>
+                    </div>
                     <div class="card-body">
                         <h5 class="card-title">+36{{costumer.telephonePrefix}} {{costumer.telephone}}</h5>
                         <p class="card-text">{{costumer.zip}} {{costumer.city}},<br />{{costumer.address1}} út

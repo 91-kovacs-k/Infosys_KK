@@ -62,6 +62,10 @@ export class Order {
   private orderLogger() {
     this.destinationLog =
       this.destinationLog +
+      this.getCostumer().zip +
+      ' ' +
+      this.getCostumer().city +
+      ', ' +
       this.getCostumer().address1 +
       '\n' +
       this.getCostumer().address2;
