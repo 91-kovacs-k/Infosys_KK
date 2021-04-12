@@ -1,0 +1,49 @@
+<button class="btn btn-outline-primary btn-sm float-left" (click)="open(mymodal)"><i class="bi bi-gear"></i></button>
+
+
+
+
+<ng-template #mymodal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">{{oldPizza.name}} módosítása</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">×</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <form [formGroup]="pizzaForm">
+
+            <input type="text" class="form-control mt-2" id="name" placeholder="{{oldPizza.name}}"
+                value="{{oldPizza.name}}" formControlName="name" required>
+
+            <input type="text" class="form-control mt-2" id="description" placeholder="{{oldPizza.description}}"
+                value="{{oldPizza.description}}" formControlName="description" required>
+
+            <div class="row mt-2 text-center">
+                <div class="col-md-4">
+                    <label for="size">Méret</label>
+                    <select class="form-control" id="size" formControlName="size" required>
+                        <option value="32" [selected]="oldPizza.size === 32">32</option>
+                        <option value="48" [selected]="oldPizza.size === 48">48</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="size">Elkészítési idő</label>
+                    <select class="form-control" id="preparationTime" formControlName="preparationTime" required>
+                        <option value="{{oldPizza.preparationTime}}" [selected]="true">{{oldPizza.preparationTime}}
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="size">Ár</label>
+                    <input type="number" class="form-control" id="price" placeholder="{{oldPizza.price}}"
+                        value="{{oldPizza.price}}" formControlName="price" required>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark" [disabled]="!pizzaForm.valid"
+            (click)="modal.close('Save click')">Módosítás</button>
+    </div>
+</ng-template>

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { LoadService } from '../load.service';
 import { Costumer } from '../models/costumer';
@@ -13,7 +13,6 @@ export class ModifyCostumerComponent implements OnInit {
   closeResult = '';
   costumers!: Costumer[];
   prefix!: number;
-  searchCostumer!: string;
   @Input() oldCostumer!: Costumer;
 
   constructor(
@@ -40,14 +39,8 @@ export class ModifyCostumerComponent implements OnInit {
     ],
   });
 
-  async search() {
-    this.costumers = await this.loadservice.filterCostumers(
-      this.searchCostumer
-    );
-  }
-
   async modifyCostumer() {
-    const costumer = this.costumer.value;
+    let costumer = this.costumer.value;
     costumer.id = this.oldCostumer.id;
     await this.loadservice.modifyCostumer(costumer);
 

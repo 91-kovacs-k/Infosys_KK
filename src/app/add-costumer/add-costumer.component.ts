@@ -21,6 +21,14 @@ export class AddCostumerComponent implements OnInit {
     private loadservice: LoadService
   ) {}
 
+  setCostumerId() {
+    if (this.costumers.length == 0) {
+      return 1;
+    } else {
+      return this.costumers[this.costumers.length - 1].id + 1;
+    }
+  }
+
   newCostumer = this.fb.group({
     name: ['', Validators.required],
     zip: [, [Validators.required, Validators.min(1000), Validators.max(9985)]],
@@ -46,8 +54,12 @@ export class AddCostumerComponent implements OnInit {
   }
 
   async addCostumer() {
-    const costumer = this.newCostumer.value;
-    costumer.id = this.costumers[this.costumers.length - 1].id + 1;
+    let costumer = this.newCostumer.value;
+    if (this.costumers.length > 0) {
+      costumer.id = this.costumers[this.costumers.length - 1].id + 1;
+    } else {
+      costumer.id = 1;
+    }
     await this.loadservice.addCostumer(costumer);
 
     this.newCostumer.reset();

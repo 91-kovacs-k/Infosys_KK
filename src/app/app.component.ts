@@ -26,12 +26,18 @@ export class AppComponent implements OnInit {
   public pizzaKeyword!: string;
 
   ovenInicialization = this.fb.group({
-    ovens: ['', [Validators.required, Validators.min(1), Validators.max(10)]],
-    bakeTime: [
-      '',
-      [Validators.required, Validators.min(1), Validators.max(40)],
-    ],
+    ovens: [, [Validators.required, Validators.min(1), Validators.max(10)]],
+    bakeTime: [, [Validators.required, Validators.min(1), Validators.max(40)]]
   });
+
+  get ovens() {
+    return this.ovenInicialization.get('ovens');
+  }
+
+  get bakeTime() {
+    return this.ovenInicialization.get('bakeTime');
+  }
+
   /*
   newCostumer = this.fb.group({
     //id: [this.costumers[this.costumers.length].id + 1],
@@ -41,7 +47,7 @@ export class AppComponent implements OnInit {
     telephone: ['', Validators.required],
   });
 */
-  kitchen = new OvenManagementComponent();
+  kitchen = new OvenManagementComponent(this.loadService);
 
   constructor(private loadService: LoadService, private fb: FormBuilder) {}
 

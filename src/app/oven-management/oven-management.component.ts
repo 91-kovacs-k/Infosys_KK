@@ -3,6 +3,7 @@ import { Order } from '../models/order';
 import { Queue } from '../models/queue';
 import { Oven } from '../models/oven';
 import { FormGroup } from '@angular/forms';
+import { LoadService } from '../load.service';
 
 @Component({
   selector: 'app-oven-management',
@@ -22,17 +23,17 @@ export class OvenManagementComponent implements OnInit {
 
   OvenManagementComponent = OvenManagementComponent;
 
-  public constructor() {}
+  public constructor(private loadService: LoadService) {}
 
   public ovenInicialization(fg: FormGroup) {
-    let db = fg.value.ovens;
-    let perc = fg.value.bakeTime;
-    if (!(perc > 0 && perc < 41)) {
+    let amount = fg.value.ovens;
+    let minutes = fg.value.bakeTime;
+    if (!(minutes > 0 && minutes < 41)) {
       this.wrongTime = true;
     } else {
       this.wrongTime = false;
     }
-    if (!(db > 0 && db < 11)) {
+    if (!(amount > 0 && amount < 11)) {
       this.wrongAmount = true;
     } else {
       this.wrongAmount = false;
@@ -41,12 +42,13 @@ export class OvenManagementComponent implements OnInit {
       if (this.inicialized) {
         alert('Már inicializálva van!');
       } else {
-        this.bakingTime = perc; // percben számolom a sütés időt
-        this.ovens = new Array(db);
-        for (let i = 0; i < db; i++) {
+        this.bakingTime = minutes; // percben számolom a sütés időt
+        this.ovens = new Array(amount);
+        for (let i = 0; i < amount; i++) {
           this.ovens[i] = new Oven();
         }
         this.inicialized = true;
+        this.loadService.setBakeTime(minutes);
       }
     }
   }

@@ -9,14 +9,20 @@ import { Pizza } from './models/pizza';
 export class LoadService {
   costumers!: Costumer[];
   pizza!: Pizza[];
+  costumersInicialized = false;
+  pizzaInicialized = false;
+  bakeTime!: number;
 
   constructor(private http: HttpClient) {}
 
   async loadCostumersIfEmpty() {
-    if (!this.costumers || this.costumers.length === 0) {
-      this.costumers = await this.http
-        .get<Costumer[]>('assets/costumers.json')
-        .toPromise();
+    if (!this.costumersInicialized) {
+      if (!this.costumers || this.costumers.length === 0) {
+        this.costumers = await this.http
+          .get<Costumer[]>('assets/costumers.json')
+          .toPromise();
+      }
+      this.costumersInicialized = true;
     }
   }
 
@@ -26,10 +32,13 @@ export class LoadService {
   }
 
   async loadPizzaIfEmpty() {
-    if (!this.pizza || this.pizza.length === 0) {
-      this.pizza = await this.http
-        .get<Pizza[]>('assets/pizza.json')
-        .toPromise();
+    if (!this.pizzaInicialized) {
+      if (!this.pizza || this.pizza.length === 0) {
+        this.pizza = await this.http
+          .get<Pizza[]>('assets/pizza.json')
+          .toPromise();
+      }
+      this.pizzaInicialized = true;
     }
   }
 
@@ -39,37 +48,47 @@ export class LoadService {
   }
 
   async addCostumer(costumer: Costumer) {
-    await this.loadCostumersIfEmpty();
     this.costumers.push(costumer);
   }
 
   async addPizza(pizza: Pizza) {
-    await this.loadPizzaIfEmpty();
     this.pizza.push(pizza);
   }
 
   async filterCostumers(query: string) {
-    await this.loadCostumersIfEmpty();
+    if (query == '') {
+      return this.costumers;
+    } else {
+      return this.costumers.filter((costumers) => {
+        if (!costumers.name) {
+          return false;
+        } else {
+          return costumers.name.toLowerCase().includes(query.toLowerCase());
+        }
+      });
+    }
+  }
 
-    return this.costumers.filter((costumers) => {
-      if (!costumers.name) {
-        return false;
-      } else {
-        return costumers.name.toLowerCase().includes(query.toLowerCase());
-      }
-    });
+  async setBakeTime(n: number) {
+    this.bakeTime = n;
+    await this.loadPizzaIfEmpty();
+    for (let i = 0; i < this.pizza.length; i++) {
+      this.pizza[i].preparationTime = this.bakeTime;
+    }
   }
 
   async filterPizza(query: string) {
-    await this.loadPizzaIfEmpty();
-
-    return this.pizza.filter((pizza) => {
-      if (!pizza.name) {
-        return false;
-      } else {
-        return pizza.name.toLowerCase().includes(query.toLowerCase());
-      }
-    });
+    if (query == '') {
+      return this.pizza;
+    } else {
+      return this.pizza.filter((pizza) => {
+        if (!pizza.name) {
+          return false;
+        } else {
+          return pizza.name.toLowerCase().includes(query.toLowerCase());
+        }
+      });
+    }
   }
 
   async modifyCostumer(costumer: Costumer) {
@@ -88,6 +107,21 @@ export class LoadService {
     }
   }
 
+  async modifyPizza(newPizza: Pizza) {
+    await this.loadCostumersIfEmpty();
+    for (let i = 0; i < this.pizza.length; i++) {
+      if (this.pizza[i].id == newPizza.id) {
+        this.pizza[i].name = newPizza.name;
+        this.pizza[i].description = newPizza.description;
+        this.pizza[i].size = newPizza.size;
+        this.pizza[i].preparationTime = newPizza.preparationTime;
+        this.pizza[i].price = newPizza.price;
+        this.pizza[i].selected = newPizza.selected;
+        break;
+      }
+    }
+  }
+
   async deleteCostumer(id: number) {
     await this.loadCostumersIfEmpty();
     for (let i = 0; i < this.costumers.length; i++) {
@@ -95,9 +129,24 @@ export class LoadService {
         for (let j = i; j < this.costumers.length; j++) {
           this.costumers[j] = this.costumers[j + 1]; //elemek előrébb mozgatása
         }
+
+        this.costumers.length--;
         break;
       }
     }
-    this.costumers.length--;
+  }
+
+  async deletePizza(id: number) {
+    await this.loadPizzaIfEmpty();
+    for (let i = 0; i < this.pizza.length; i++) {
+      if (this.pizza[i].id == id) {
+        for (let j = i; j < this.pizza.length; j++) {
+          this.pizza[j] = this.pizza[j + 1]; //elemek előrébb mozgatása
+        }
+
+        this.pizza.length--;
+        break;
+      }
+    }
   }
 }

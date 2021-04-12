@@ -18,12 +18,12 @@ input[type="number"]::-webkit-inner-spin-button {
   justify-content: space-between;
   flex: 0 1 24%;
   width: 15em;
-  height: 18em;
+  height: 21em;
 }
 
 .card-costumer {
   width: 15em;
-  height: 18em;
+  height: 16em;
 }
 
 .card-order {

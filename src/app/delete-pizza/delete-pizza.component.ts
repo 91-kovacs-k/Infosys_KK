@@ -2,16 +2,16 @@ import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { NgbModal, ModalDismissReasons } from '@ng-bootstrap/ng-bootstrap';
 import { LoadService } from '../load.service';
-import { Costumer } from '../models/costumer';
+import { Pizza } from '../models/pizza';
 
 @Component({
-  selector: 'app-delete-costumer',
-  templateUrl: './delete-costumer.component.html',
-  styleUrls: ['./delete-costumer.component.css'],
+  selector: 'app-delete-pizza',
+  templateUrl: './delete-pizza.component.html',
+  styleUrls: ['./delete-pizza.component.css'],
 })
-export class DeleteCostumerComponent implements OnInit {
+export class DeletePizzaComponent implements OnInit {
   closeResult = '';
-  @Input() oldCostumer!: Costumer;
+  @Input() oldPizza!: Pizza;
 
   constructor(
     private modalService: NgbModal,
@@ -24,7 +24,7 @@ export class DeleteCostumerComponent implements OnInit {
       .result.then(
         (result) => {
           this.closeResult = `Closed with: ${result}`;
-          this.deleteCostumer();
+          this.deletePizza();
         },
         (reason) => {
           this.closeResult = `Dismissed ${this.getDismissReason(reason)}`;
@@ -32,8 +32,8 @@ export class DeleteCostumerComponent implements OnInit {
       );
   }
 
-  async deleteCostumer() {
-    await this.loadservice.deleteCostumer(this.oldCostumer.id);
+  async deletePizza() {
+    await this.loadservice.deletePizza(this.oldPizza.id);
   }
 
   private getDismissReason(reason: any): string {

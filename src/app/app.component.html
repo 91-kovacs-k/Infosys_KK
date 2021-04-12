@@ -11,18 +11,25 @@
                     <input type="number" class="form-control text-center" id="ovens" formControlName="ovens"
                         placeholder="Add meg a sütők számát" required [disabled]="!ovenInicialization.valid"
                         (keyup.enter)="kitchen.ovenInicialization(ovenInicialization)">
-                    <label class="text-danger" *ngIf="!ovenInicialization.valid">1 és 10 közötti számot adj
-                        meg!</label>
+                    <div class="text-danger" *ngIf="ovens?.invalid && (ovens?.dirty || ovens?.touched)">
+                        <small *ngIf="ovens?.errors?.required">A sütők számának megadása kötelező!</small>
+                        <small *ngIf="ovens?.errors?.min || ovens?.errors?.max">1 és 10 közötti számot adj
+                            meg!</small>
+                    </div>
                     <input type="number" class="form-control text-center mt-2" id="bakeTime" formControlName="bakeTime"
                         placeholder="Add meg a sütés idejét" required
                         (keyup.enter)="kitchen.ovenInicialization(ovenInicialization)">
-                    <label class="text-danger" *ngIf="!ovenInicialization.valid">1 és 40 közötti számot adj
-                        meg!</label><br>
+                    <div class="text-danger" *ngIf="bakeTime?.invalid && (bakeTime?.dirty || bakeTime?.touched)">
+                        <small *ngIf="bakeTime?.errors?.required">A sütők számának megadása kötelező!</small>
+                        <small *ngIf="bakeTime?.errors?.min || bakeTime?.errors?.max">1 és 40
+                            közötti számot adj
+                            meg!</small>
+                    </div>
                     <!--
                     <button type="submit" class="btn btn-primary" [disabled]="!ovenInicialization.valid"
                         (click)="kitchen.sutoInicializalas(ovenInicialization)">Nyitás</button>
                         -->
-                    <button type="submit" class="btn btn-primary" [disabled]="!ovenInicialization.valid"
+                    <button type="submit" class="btn btn-primary mt-2" [disabled]="!ovenInicialization.valid"
                         (click)="kitchen.ovenInicialization(ovenInicialization)">Nyitás</button>
                 </form>
             </div>
@@ -125,11 +132,18 @@
             <div class="m-1 text-center" *ngFor="let pizza of pizza">
 
                 <div class="card text-dark bg-light">
-                    <div class="card-header">{{pizza.name}}</div>
+                    <div class="card-header">
+                        <app-modify-pizza [oldPizza]="pizza"></app-modify-pizza>{{pizza.name}}<app-delete-pizza
+                            [oldPizza]="pizza">
+                        </app-delete-pizza>
+                    </div>
                     <div class="card-body">
                         <h3 class="card-title"><span class="badge badge-success">{{pizza.price}} Ft</span></h3>
-                        <p class="card-text">{{pizza.description}}<br />Kiválasztott mennyiség: {{pizza.selected}}
+                        <p class="card-text">{{pizza.description}}<br />Méret: {{pizza.size}} cm<br />Sütés ideje:
+                            {{pizza.preparationTime}} perc<br />Kiválasztott
+                            mennyiség: {{pizza.selected}}
                         </p>
+
                     </div>
                     <div class="card-footer text-center">
                         <button class="btn btn-outline-primary custom" *ngIf=" !selectedPizza.includes(pizza); else

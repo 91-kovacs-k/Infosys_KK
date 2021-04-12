@@ -1,0 +1,23 @@
+<button class="btn btn-outline-danger btn-sm float-right" (click)="open(mymodal)"><i class="bi bi-trash"></i></button>
+
+
+
+
+<ng-template #mymodal let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">{{oldPizza.name}} törlése</h4>
+        <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">×</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <p>Biztos, hogy törlöd a {{oldPizza.name}} pizzát?</p>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-danger" (click)="modal.close('Save click')">Törlés</button>
+        <button type="button" class="btn btn-outline-dark" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            Mégsem
+        </button>
+
+    </div>
+</ng-template>

@@ -33,7 +33,7 @@
                 <div class="col-md-4">
                     <label for="size">Elkészítési idő</label>
                     <select class="form-control" id="preparationTime" formControlName="preparationTime" required>
-                        <option value="20">20</option>
+                        <option value="{{bakeTime}}" [selected]="true">{{bakeTime}}</option>
                     </select>
                 </div>
                 <div class="col-md-4">

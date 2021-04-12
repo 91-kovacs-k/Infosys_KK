@@ -10,9 +10,11 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AddCostumerComponent } from './add-costumer/add-costumer.component';
 import { ModifyCostumerComponent } from './modify-costumer/modify-costumer.component';
 import { DeleteCostumerComponent } from './delete-costumer/delete-costumer.component';
+import { ModifyPizzaComponent } from './modify-pizza/modify-pizza.component';
+import { DeletePizzaComponent } from './delete-pizza/delete-pizza.component';
 
 @NgModule({
-  declarations: [AppComponent, OvenManagementComponent, AddPizzaComponent, AddCostumerComponent, ModifyCostumerComponent, DeleteCostumerComponent],
+  declarations: [AppComponent, OvenManagementComponent, AddPizzaComponent, AddCostumerComponent, ModifyCostumerComponent, DeleteCostumerComponent, ModifyPizzaComponent, DeletePizzaComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
