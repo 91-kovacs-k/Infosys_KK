@@ -34,7 +34,15 @@ export class AddCostumerComponent implements OnInit {
     zip: [, [Validators.required, Validators.min(1000), Validators.max(9985)]],
     city: [, Validators.required],
     address1: ['', Validators.required],
-    address2: [, [Validators.required, Validators.min(1), Validators.max(873)]],
+    address2: [
+      ,
+      [
+        Validators.required,
+        Validators.min(1),
+        Validators.max(873),
+        Validators.pattern('^[0-9]*$'),
+      ],
+    ],
     telephonePrefix: [, Validators.required],
     telephone: [
       ,
@@ -46,6 +54,27 @@ export class AddCostumerComponent implements OnInit {
       ],
     ],
   });
+  get name() {
+    return this.newCostumer.get('name');
+  }
+  get zip() {
+    return this.newCostumer.get('zip');
+  }
+  get city() {
+    return this.newCostumer.get('city');
+  }
+  get address1() {
+    return this.newCostumer.get('address1');
+  }
+  get address2() {
+    return this.newCostumer.get('address2');
+  }
+  get telephonePrefix() {
+    return this.newCostumer.get('telephonePrefix');
+  }
+  get telephone() {
+    return this.newCostumer.get('telephone');
+  }
 
   async search() {
     this.costumers = await this.loadservice.filterCostumers(

@@ -18,9 +18,15 @@
 
             <input type="text" class="form-control mt-2" id="name" placeholder="Pizza neve" formControlName="name"
                 required>
+            <div class="text-danger" *ngIf="name?.invalid && (name?.dirty || name?.touched)">
+                <small *ngIf="name?.errors?.required">A nevet kötelező megadni!</small>
+            </div>
 
             <input type="text" class="form-control mt-2" id="description" placeholder="Összetevők"
                 formControlName="description" required>
+            <div class="text-danger" *ngIf="description?.invalid && (description?.dirty || description?.touched)">
+                <small *ngIf="description?.errors?.required">Az összetevőket kötelező megadni!</small>
+            </div>
 
             <div class="row mt-2 text-center">
                 <div class="col-md-4">
@@ -40,6 +46,19 @@
                     <label for="size">Ár</label>
                     <input type="number" class="form-control" id="price" placeholder="Pizza ára" formControlName="price"
                         required>
+                </div>
+            </div>
+            <div class="row mt-2 text-center">
+                <div class="col-md-4">
+                </div>
+                <div class="col-md-4">
+                </div>
+                <div class="col-md-4">
+                    <div class="text-danger" *ngIf="price?.invalid && (price?.dirty || price?.touched)">
+                        <small *ngIf="price?.errors?.required">Az árat kötelező megadni!</small>
+                        <small *ngIf="price?.errors?.min || price?.errors?.max">1000 és 5000 közötti számot adj
+                            meg!</small>
+                    </div>
                 </div>
             </div>
 

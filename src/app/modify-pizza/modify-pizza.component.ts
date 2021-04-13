@@ -21,18 +21,50 @@ export class ModifyPizzaComponent implements OnInit {
     preparationTime: [20, [Validators.min(1), Validators.max(40)]],
     price: [1000, [Validators.min(1000), Validators.max(5000)]],
   });
+  get name() {
+    return this.pizzaForm.get('name');
+  }
+  get description() {
+    return this.pizzaForm.get('description');
+  }
+  get size() {
+    return this.pizzaForm.get('size');
+  }
+  get preparationTime() {
+    return this.pizzaForm.get('preparationTime');
+  }
+  get price() {
+    return this.pizzaForm.get('price');
+  }
 
   async modifyPizza() {
     let pizza = this.pizzaForm.value;
     pizza.id = this.oldPizza.id;
     pizza.preparationTime = this.loadservice.bakeTime;
     pizza.selected = this.oldPizza.selected;
+    if (pizza.name == '') {
+      pizza.name = this.oldPizza.name;
+    }
+    if (pizza.description == '') {
+      pizza.description = this.oldPizza.description;
+    }
+    if (pizza.price == '') {
+      pizza.price = this.oldPizza.price;
+    }
     await this.loadservice.modifyPizza(pizza);
 
     this.pizzaForm.reset();
   }
 
   open(content: any) {
+    this.pizzaForm.controls['name'].setValue(this.oldPizza.name);
+    this.pizzaForm.controls['description'].setValue(this.oldPizza.description);
+    this.pizzaForm.controls['size'].setValue(this.oldPizza.size);
+    this.pizzaForm.controls['preparationTime'].setValue(
+      this.oldPizza.preparationTime
+    );
+    this.pizzaForm.controls['price'].setValue(this.oldPizza.price);
+
     this.modalService
       .open(content, { ariaLabelledBy: 'modal-basic-title' })
       .result.then(

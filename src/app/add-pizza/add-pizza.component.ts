@@ -28,6 +28,22 @@ export class AddPizzaComponent implements OnInit {
     price: [1000, [Validators.min(1000), Validators.max(5000)]],
   });
 
+  get name() {
+    return this.newPizza.get('name');
+  }
+  get description() {
+    return this.newPizza.get('description');
+  }
+  get size() {
+    return this.newPizza.get('size');
+  }
+  get preparationTime() {
+    return this.newPizza.get('preparationTime');
+  }
+  get price() {
+    return this.newPizza.get('price');
+  }
+
   async addPizza() {
     let pizza = this.newPizza.value;
     pizza.id = this.setPizzaId();
